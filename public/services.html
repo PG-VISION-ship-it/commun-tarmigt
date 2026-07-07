@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services administratifs — Commune de Tarmigt</title>
+<meta name="description" content="Consultez les services administratifs de la commune de Tarmigt : démarches, documents requis, délais et coûts.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Work+Sans:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <img class="Commune-logo" src="tarmigt-logo.svg" alt="Logo de la commune de Tarmigt">
+      <div class="Commune-text">
+        <span class="eyebrow" data-i18n="eyebrow_commune">Province de Ouarzazate · Région Drâa-Tafilalet</span>
+        <h1 data-i18n="commune_name">Commune de Tarmigt</h1>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="index.html" data-i18n="nav_accueil">Accueil</a></li>
+        <li><a href="actualites.html" data-i18n="nav_actualites">Actualités</a></li>
+        <li><a href="services.html" class="active" data-i18n="nav_services">Services</a></li>
+        <li><a href="contact.html" data-i18n="nav_contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-toggle">
+        <button data-lang="fr">FR</button>
+        <button data-lang="ar">AR</button>
+      </div>
+      <button class="nav-toggle" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="motif terracotta"></div>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-i18n="services_eyebrow">Démarches</span>
+      <h3 data-i18n="page_services_title">Tous les services administratifs</h3>
+    </div>
+    <div class="services-grid" id="services-list" style="grid-template-columns:1fr;">
+      <p class="state-msg" data-i18n="loading">Chargement…</p>
+    </div>
+  </div>
+</section>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" id="modal-close" aria-label="Fermer">&times;</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<footer id="contact">
+  <div class="container footer-grid">
+    <div>
+      <h5 data-i18n="footer_about_title">Commune de Tarmigt</h5>
+      <p data-i18n="footer_about_text">Portail officiel d'information et de services de la commune rurale de Tarmigt, province de Ouarzazate.</p>
+    </div>
+    <div>
+      <h5 data-i18n="footer_contact_title">Contact</h5>
+      <p data-i18n="footer_address">Siège de la commune, Tarmigt, Ouarzazate</p>
+      <p>Tél : 05XX-XXXXXX</p>
+      <p>Email : contact@tarmigt.ma</p>
+    </div>
+    <div>
+      <h5 data-i18n="footer_links_title">Liens utiles</h5>
+      <ul>
+        <li><a href="actualites.html" data-i18n="nav_actualites">Actualités</a></li>
+        <li><a href="services.html" data-i18n="nav_services">Services</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Commune de Tarmigt. <span data-i18n="footer_rights">Tous droits réservés.</span></p>
+  </div>
+</footer>
+
+<script src="js/lang.js"></script>
+<script src="main.js"></script>
+<script>
+let allServices = [];
+
+async function loadServices(){
+  const el = document.getElementById("services-list");
+  try{
+    allServices = await apiGet("/services");
+    renderServices();
+  }catch(e){
+    el.innerHTML = `<p class="state-msg">${escapeHtml(e.message)}</p>`;
+  }
+}
+
+function renderServices(){
+  const el = document.getElementById("services-list");
+  const lang = getLang();
+  if(!allServices.length){
+    el.innerHTML = `<p class="state-msg">${I18N[lang].empty_services}</p>`;
+    return;
+  }
+  el.innerHTML = allServices.map(item => {
+    const nom = lang === "ar" ? item.nom_ar : item.nom_fr;
+    const desc = lang === "ar" ? item.description_ar : item.description_fr;
+    return `
+      <div class="service-row" data-id="${item.id}">
+        <div class="service-icon">${escapeHtml((nom || "?").charAt(0))}</div>
+        <div style="flex:1;">
+          <h4>${escapeHtml(nom)}</h4>
+          <p>${escapeHtml(desc)}</p>
+          <div class="service-meta">
+            <span>${I18N[lang].delay}: ${escapeHtml(item.delai || "—")}</span>
+            <span>${I18N[lang].cost}: ${escapeHtml(item.cout || "—")}</span>
+          </div>
+          <a class="card-link" href="#" data-id="${item.id}" style="display:inline-block;margin-top:10px;">${I18N[lang].documents_required} →</a>
+        </div>
+      </div>`;
+  }).join("");
+
+  el.querySelectorAll(".card-link").forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      openModal(link.dataset.id);
+    });
+  });
+}
+
+function openModal(id){
+  const lang = getLang();
+  const item = allServices.find(s => String(s.id) === String(id));
+  if(!item) return;
+  const nom = lang === "ar" ? item.nom_ar : item.nom_fr;
+  const desc = lang === "ar" ? item.description_ar : item.description_fr;
+  const docs = lang === "ar" ? item.documents_requis_ar : item.documents_requis_fr;
+  document.getElementById("modal-content").innerHTML = `
+    <h3>${escapeHtml(nom)}</h3>
+    <div class="modal-body"><p>${escapeHtml(desc)}</p></div>
+    <dl>
+      <dt>${I18N[lang].documents_required}</dt>
+      <dd>${escapeHtml(docs)}</dd>
+      <dt>${I18N[lang].delay}</dt>
+      <dd>${escapeHtml(item.delai || "—")}</dd>
+      <dt>${I18N[lang].cost}</dt>
+      <dd>${escapeHtml(item.cout || "—")}</dd>
+    </dl>
+  `;
+  document.getElementById("modal-overlay").classList.add("open");
+}
+
+document.getElementById("modal-close").addEventListener("click", () => {
+  document.getElementById("modal-overlay").classList.remove("open");
+});
+document.getElementById("modal-overlay").addEventListener("click", (e) => {
+  if(e.target.id === "modal-overlay") e.currentTarget.classList.remove("open");
+});
+
+document.addEventListener("DOMContentLoaded", loadServices);
+document.addEventListener("langchange", renderServices);
+</script>
+</body>
+</html>

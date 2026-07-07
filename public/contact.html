@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Commune de Tarmigt</title>
+<meta name="description" content="Contactez la commune de Tarmigt : adresse, téléphone, email, horaires d'accueil et formulaire de contact.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Work+Sans:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <img class="Commune-logo" src="tarmigt-logo.svg" alt="Logo de la commune de Tarmigt">
+      <div class="Commune-text">
+        <span class="eyebrow" data-i18n="eyebrow_commune">Province de Ouarzazate · Région Drâa-Tafilalet</span>
+        <h1 data-i18n="commune_name">Commune de Tarmigt</h1>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="index.html" data-i18n="nav_accueil">Accueil</a></li>
+        <li><a href="actualites.html" data-i18n="nav_actualites">Actualités</a></li>
+        <li><a href="services.html" data-i18n="nav_services">Services</a></li>
+        <li><a href="contact.html" class="active" data-i18n="nav_contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-toggle">
+        <button data-lang="fr">FR</button>
+        <button data-lang="ar">AR</button>
+      </div>
+      <button class="nav-toggle" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="motif terracotta"></div>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-i18n="contact_eyebrow">Contact</span>
+      <h3 data-i18n="contact_title">Contactez la commune</h3>
+      <p data-i18n="contact_lead">Une question, une réclamation ou une suggestion ? L'équipe de la commune de Tarmigt vous répond.</p>
+    </div>
+
+    <div class="contact-grid">
+
+      <!-- Coordonnées -->
+      <div class="contact-info">
+        <div class="contact-info-card">
+          <h4 data-i18n="contact_info_title">Coordonnées</h4>
+
+          <div class="info-row">
+            <div class="info-icon">📍</div>
+            <div>
+              <span class="info-label" data-i18n="contact_address_label">Adresse</span>
+              <p data-i18n="footer_address">Siège de la commune, Tarmigt, Ouarzazate</p>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-icon">📞</div>
+            <div>
+              <span class="info-label" data-i18n="contact_phone_label">Téléphone</span>
+              <p><a href="tel:+21205XXXXXXXX">05XX-XXXXXX</a></p>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-icon">✉️</div>
+            <div>
+              <span class="info-label" data-i18n="contact_email_label">Email</span>
+              <p><a href="mailto:contact@tarmigt.ma">contact@tarmigt.ma</a></p>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-icon">🕗</div>
+            <div>
+              <span class="info-label" data-i18n="contact_hours_label">Horaires d'accueil</span>
+              <p data-i18n="contact_hours_value">Lundi – Vendredi : 8h30 – 16h30</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="map-card">
+          <span class="eyebrow" data-i18n="contact_map_title">Nous trouver</span>
+          <div class="map-embed">
+            <iframe
+              src="https://www.google.com/maps?q=Tarmigt,Ouarzazate,Morocco&output=embed"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Localisation de la commune de Tarmigt">
+            </iframe>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulaire -->
+      <div class="contact-form-card">
+        <h4 data-i18n="contact_form_title">Envoyer un message</h4>
+
+        <form id="contact-form" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cf-name" data-i18n="form_name">Nom complet</label>
+              <input type="text" id="cf-name" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="cf-email" data-i18n="form_email">Adresse email</label>
+              <input type="email" id="cf-email" name="email" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cf-phone" data-i18n="form_phone">Téléphone (optionnel)</label>
+              <input type="tel" id="cf-phone" name="phone">
+            </div>
+            <div class="form-group">
+              <label for="cf-subject" data-i18n="form_subject">Sujet</label>
+              <select id="cf-subject" name="subject" required>
+                <option value="" data-i18n="subject_select">Choisir un sujet</option>
+                <option value="info" data-i18n="subject_info">Demande d'information</option>
+                <option value="complaint" data-i18n="subject_complaint">Réclamation</option>
+                <option value="suggestion" data-i18n="subject_suggestion">Suggestion</option>
+                <option value="other" data-i18n="subject_other">Autre</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="cf-message" data-i18n="form_message">Message</label>
+            <textarea id="cf-message" name="message" rows="5" data-i18n-placeholder="form_message_placeholder" placeholder="Écrivez votre message ici…" required></textarea>
+          </div>
+
+          <p class="form-feedback" id="cf-feedback" role="status" aria-live="polite"></p>
+
+          <button type="submit" class="btn solid" id="cf-submit" data-i18n="form_submit">Envoyer le message</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="container footer-grid">
+    <div>
+      <h5 data-i18n="footer_about_title">Commune de Tarmigt</h5>
+      <p data-i18n="footer_about_text">Portail officiel d'information et de services de la commune rurale de Tarmigt, province d'Ouarzazate.</p>
+    </div>
+    <div>
+      <h5 data-i18n="footer_contact_title">Contact</h5>
+      <p data-i18n="footer_address">Siège de la commune, Tarmigt, Ouarzazate</p>
+      <p>Tél : 05XX-XXXXXX</p>
+      <p>Email : contact@tarmigt.ma</p>
+    </div>
+    <div>
+      <h5 data-i18n="footer_links_title">Liens utiles</h5>
+      <ul>
+        <li><a href="actualites.html" data-i18n="nav_actualites">Actualités</a></li>
+        <li><a href="services.html" data-i18n="nav_services">Services</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Commune de Tarmigt. <span data-i18n="footer_rights">Tous droits réservés.</span></p>
+  </div>
+</footer>
+
+<script src="js/lang.js"></script>
+<script src="main.js"></script>
+<script>
+// Applique aussi les traductions des attributs placeholder
+function applyPlaceholders(){
+  const lang = getLang();
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+    const key = el.getAttribute("data-i18n-placeholder");
+    if (I18N[lang][key] !== undefined) el.setAttribute("placeholder", I18N[lang][key]);
+  });
+}
+document.addEventListener("DOMContentLoaded", applyPlaceholders);
+document.addEventListener("langchange", applyPlaceholders);
+
+const form = document.getElementById("contact-form");
+const feedback = document.getElementById("cf-feedback");
+const submitBtn = document.getElementById("cf-submit");
+
+function isValidEmail(value){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const lang = getLang();
+  feedback.className = "form-feedback";
+
+  const name = document.getElementById("cf-name").value.trim();
+  const email = document.getElementById("cf-email").value.trim();
+  const subject = document.getElementById("cf-subject").value;
+  const message = document.getElementById("cf-message").value.trim();
+
+  if (!name || !email || !subject || !message){
+    feedback.textContent = I18N[lang].form_error_required;
+    feedback.classList.add("error");
+    return;
+  }
+  if (!isValidEmail(email)){
+    feedback.textContent = I18N[lang].form_error_email;
+    feedback.classList.add("error");
+    return;
+  }
+
+  const originalLabel = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = I18N[lang].form_sending;
+
+  try {
+    await apiPost("/contact", { name, email, phone: document.getElementById("cf-phone").value.trim(), subject, message });
+    feedback.textContent = I18N[lang].form_success;
+    feedback.classList.add("success");
+    form.reset();
+  } catch (e) {
+    feedback.textContent = e.message;
+    feedback.classList.add("error");
+  }
+  submitBtn.disabled = false;
+  submitBtn.textContent = originalLabel;
+});
+
+document.addEventListener("langchange", () => {
+  feedback.textContent = "";
+  feedback.className = "form-feedback";
+});
+</script>
+</body>
+</html>

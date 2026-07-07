@@ -1,0 +1,54 @@
+[
+  {
+    "id": 1,
+    "nom_fr": "Extrait d'acte de naissance",
+    "nom_ar": "مستخرج من رسم الولادة",
+    "description_fr": "Délivrance d'un extrait d'acte de naissance pour les personnes nées ou enregistrées dans la commune de Tarmigt.",
+    "description_ar": "تسليم مستخرج من رسم الولادة للأشخاص المزدادين أو المسجلين بجماعة ترميكت.",
+    "documents_requis_fr": "Carte d'identité nationale ou livret de famille.",
+    "documents_requis_ar": "البطاقة الوطنية للتعريف أو دفتر الحالة المدنية.",
+    "delai": "Immédiat (guichet unique)",
+    "cout": "Gratuit",
+    "categorie": "État civil",
+    "ordre_affichage": 1
+  },
+  {
+    "id": 2,
+    "nom_fr": "Certificat de résidence",
+    "nom_ar": "شهادة السكنى",
+    "description_fr": "Attestation confirmant la résidence habituelle d'une personne sur le territoire de la commune.",
+    "description_ar": "شهادة تثبت الإقامة الاعتيادية لشخص بتراب الجماعة.",
+    "documents_requis_fr": "Carte d'identité nationale, justificatif de domicile (facture d'eau/électricité).",
+    "documents_requis_ar": "البطاقة الوطنية للتعريف، وثيقة تثبت السكن (فاتورة الماء أو الكهرباء).",
+    "delai": "24 heures",
+    "cout": "Gratuit",
+    "categorie": "État civil",
+    "ordre_affichage": 2
+  },
+  {
+    "id": 3,
+    "nom_fr": "Autorisation de construire",
+    "nom_ar": "رخصة البناء",
+    "description_fr": "Autorisation préalable requise pour tout projet de construction, extension ou rénovation sur le territoire communal.",
+    "description_ar": "رخصة مسبقة مطلوبة لكل مشروع بناء أو توسيع أو ترميم بتراب الجماعة.",
+    "documents_requis_fr": "Titre de propriété, plans architecturaux visés, dossier technique.",
+    "documents_requis_ar": "رسم الملكية، التصاميم المعمارية المؤشر عليها، الملف التقني.",
+    "delai": "30 jours ouvrables",
+    "cout": "Selon barème communal",
+    "categorie": "Urbanisme",
+    "ordre_affichage": 3
+  },
+  {
+    "id": 4,
+    "nom_fr": "Légalisation de signature",
+    "nom_ar": "التصديق على الإمضاء",
+    "description_fr": "Service de légalisation de signature pour les documents administratifs et privés des citoyens.",
+    "description_ar": "خدمة التصديق على الإمضاء بالنسبة للوثائق الإدارية والخاصة للمواطنين.",
+    "documents_requis_fr": "Carte d'identité nationale, document à légaliser.",
+    "documents_requis_ar": "البطاقة الوطنية للتعريف، الوثيقة المراد التصديق عليها.",
+    "delai": "Immédiat",
+    "cout": "Gratuit",
+    "categorie": "Affaires générales",
+    "ordre_affichage": 4
+  }
+]

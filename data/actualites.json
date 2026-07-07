@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "titre_fr": "Lancement des travaux d'aménagement de la route reliant Tarmigt à la RN10",
+    "titre_ar": "انطلاق أشغال تهيئة الطريق الرابطة بين ترميكت والطريق الوطنية رقم 10",
+    "contenu_fr": "La commune de Tarmigt annonce le lancement des travaux d'aménagement et d'élargissement de la route reliant le centre de la commune à la route nationale RN10. Ce projet, financé conjointement par le conseil communal et la province d'Ouarzazate, vise à améliorer la sécurité routière et à faciliter les déplacements des habitants. Les travaux devraient durer environ six mois.",
+    "contenu_ar": "تعلن جماعة ترميكت عن انطلاق أشغال تهيئة وتوسيع الطريق الرابطة بين مركز الجماعة والطريق الوطنية رقم 10. يهدف هذا المشروع، الممول بشكل مشترك من طرف المجلس الجماعي وعمالة إقليم ورزازات، إلى تحسين السلامة الطرقية وتسهيل تنقل الساكنة. من المتوقع أن تستمر الأشغال لمدة ستة أشهر تقريبا.",
+    "image_url": null,
+    "date_publication": "2026-06-20",
+    "est_publie": true
+  },
+  {
+    "id": 2,
+    "titre_fr": "Campagne de vaccination du bétail dans les douars de la commune",
+    "titre_ar": "حملة تلقيح المواشي بدواوير الجماعة",
+    "contenu_fr": "En collaboration avec la direction provinciale de l'agriculture, la commune organise une campagne gratuite de vaccination du bétail contre les maladies saisonnières dans l'ensemble des douars relevant de son territoire. Les éleveurs sont invités à se présenter aux points de rassemblement communiqués par les autorités locales.",
+    "contenu_ar": "بتعاون مع المديرية الإقليمية للفلاحة، تنظم الجماعة حملة مجانية لتلقيح المواشي ضد الأمراض الموسمية بجميع الدواوير التابعة لترابها. يدعى مربو الماشية للحضور إلى نقط التجمع التي ستعلن عنها السلطات المحلية.",
+    "image_url": null,
+    "date_publication": "2026-06-10",
+    "est_publie": true
+  },
+  {
+    "id": 3,
+    "titre_fr": "Session ordinaire du conseil communal — juin 2026",
+    "titre_ar": "الدورة العادية للمجلس الجماعي — يونيو 2026",
+    "contenu_fr": "Le conseil communal de Tarmigt tiendra sa session ordinaire au titre du mois de juin 2026. L'ordre du jour comprend notamment l'examen du budget rectificatif, le suivi des projets d'infrastructure en cours et l'approbation de nouvelles conventions de partenariat.",
+    "contenu_ar": "سيعقد المجلس الجماعي لترميكت دورته العادية برسم شهر يونيو 2026. ويتضمن جدول الأعمال بالخصوص دراسة الميزانية التعديلية، تتبع مشاريع البنية التحتية الجارية، والمصادقة على اتفاقيات شراكة جديدة.",
+    "image_url": null,
+    "date_publication": "2026-06-01",
+    "est_publie": true
+  }
+]

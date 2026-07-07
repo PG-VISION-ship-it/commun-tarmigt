@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Actualités — Commune de Tarmigt</title>
+<meta name="description" content="Retrouvez toutes les actualités de la commune de Tarmigt : annonces, événements, projets et informations locales.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Work+Sans:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <img class="Commune-logo" src="tarmigt-logo.svg" alt="Logo de la commune de Tarmigt">
+      <div class="Commune-text">
+        <span class="eyebrow" data-i18n="eyebrow_commune">Province de Ouarzazate · Région Drâa-Tafilalet</span>
+        <h1 data-i18n="commune_name">Commune de Tarmigt</h1>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="index.html" data-i18n="nav_accueil">Accueil</a></li>
+        <li><a href="actualites.html" class="active" data-i18n="nav_actualites">Actualités</a></li>
+        <li><a href="services.html" data-i18n="nav_services">Services</a></li>
+        <li><a href="contact.html" data-i18n="nav_contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-toggle">
+        <button data-lang="fr">FR</button>
+        <button data-lang="ar">AR</button>
+      </div>
+      <button class="nav-toggle" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<div class="motif"></div>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" data-i18n="news_eyebrow">À la une</span>
+      <h3 data-i18n="page_news_title">Toutes les actualités</h3>
+    </div>
+    <div class="card-grid" id="news-list">
+      <p class="state-msg" data-i18n="loading">Chargement…</p>
+    </div>
+  </div>
+</section>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" id="modal-close" aria-label="Fermer">&times;</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<footer id="contact">
+  <div class="container footer-grid">
+    <div>
+      <h5 data-i18n="footer_about_title">Commune de Tarmigt</h5>
+      <p data-i18n="footer_about_text">Portail officiel d'information et de services de la commune rurale de Tarmigt, province de Ouarzazate.</p>
+    </div>
+    <div>
+      <h5 data-i18n="footer_contact_title">Contact</h5>
+      <p data-i18n="footer_address">Siège de la commune, Tarmigt, Ouarzazate</p>
+      <p>Tél : 05XX-XXXXXX</p>
+      <p>Email : contact@tarmigt.ma</p>
+    </div>
+    <div>
+      <h5 data-i18n="footer_links_title">Liens utiles</h5>
+      <ul>
+        <li><a href="actualites.html" data-i18n="nav_actualites">Actualités</a></li>
+        <li><a href="services.html" data-i18n="nav_services">Services</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Commune de Tarmigt. <span data-i18n="footer_rights">Tous droits réservés.</span></p>
+  </div>
+</footer>
+
+<script src="js/lang.js"></script>
+<script src="main.js"></script>
+<script>
+let allNews = [];
+
+async function loadNews(){
+  const el = document.getElementById("news-list");
+  try{
+    allNews = await apiGet("/actualites");
+    renderNews();
+  }catch(e){
+    el.innerHTML = `<p class="state-msg">${escapeHtml(e.message)}</p>`;
+  }
+}
+
+function renderNews(){
+  const el = document.getElementById("news-list");
+  const lang = getLang();
+  if(!allNews.length){
+    el.innerHTML = `<p class="state-msg">${I18N[lang].empty_news}</p>`;
+    return;
+  }
+  el.innerHTML = allNews.map(item => {
+    const titre = lang === "ar" ? item.titre_ar : item.titre_fr;
+    const contenu = lang === "ar" ? item.contenu_ar : item.contenu_fr;
+    return `
+      <div class="card" data-id="${item.id}">
+        <div class="card-media">Tarmigt</div>
+        <div class="card-body">
+          <span class="card-date">${formatDate(item.date_publication, lang)}</span>
+          <h4>${escapeHtml(titre)}</h4>
+          <p>${escapeHtml((contenu || "").slice(0, 120))}${contenu && contenu.length > 120 ? "…" : ""}</p>
+          <a class="card-link" href="#" data-id="${item.id}">${I18N[lang].read_more} →</a>
+        </div>
+      </div>`;
+  }).join("");
+
+  el.querySelectorAll(".card-link").forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      openModal(link.dataset.id);
+    });
+  });
+}
+
+function openModal(id){
+  const lang = getLang();
+  const item = allNews.find(n => String(n.id) === String(id));
+  if(!item) return;
+  const titre = lang === "ar" ? item.titre_ar : item.titre_fr;
+  const contenu = lang === "ar" ? item.contenu_ar : item.contenu_fr;
+  document.getElementById("modal-content").innerHTML = `
+    <span class="card-date">${formatDate(item.date_publication, lang)}</span>
+    <h3>${escapeHtml(titre)}</h3>
+    <div class="modal-body"><p>${escapeHtml(contenu)}</p></div>
+  `;
+  document.getElementById("modal-overlay").classList.add("open");
+}
+
+document.getElementById("modal-close").addEventListener("click", () => {
+  document.getElementById("modal-overlay").classList.remove("open");
+});
+document.getElementById("modal-overlay").addEventListener("click", (e) => {
+  if(e.target.id === "modal-overlay") e.currentTarget.classList.remove("open");
+});
+
+document.addEventListener("DOMContentLoaded", loadNews);
+document.addEventListener("langchange", renderNews);
+</script>
+</body>
+</html>
