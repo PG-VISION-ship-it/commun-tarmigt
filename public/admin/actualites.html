@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Actualites - Administration</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="admin-wrapper">
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar" id="topbar"></header>
+      <div class="content">
+        <div class="page-header">
+          <h2>Gestion des actualites</h2>
+          <p>Creer, modifier et supprimer des actualites</p>
+        </div>
+        <div class="toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="search-input" placeholder="Rechercher une actualite...">
+          </div>
+          <button class="btn btn-primary" onclick="openModal()">+ Nouvelle actualite</button>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table>
+                <thead><tr><th>Image</th><th>Titre (FR)</th><th>Titre (AR)</th><th>Date</th><th>Etat</th><th>Actions</th></tr></thead>
+                <tbody id="news-table"><tr><td colspan="6" class="loading"><div class="spinner"></div></td></tr></tbody>
+              </table>
+            </div>
+            <div class="pagination" id="pagination"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">Nouvelle actualite</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="alert" id="form-alert"></div>
+        <form id="news-form">
+          <input type="hidden" id="edit-id">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Titre (Francais) *</label>
+              <input type="text" id="titre_fr" required>
+            </div>
+            <div class="form-group">
+              <label>Titre (Arabe) *</label>
+              <input type="text" id="titre_ar" dir="rtl" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Contenu (Francais) *</label>
+              <textarea id="contenu_fr" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+              <label>Contenu (Arabe) *</label>
+              <textarea id="contenu_ar" rows="4" dir="rtl" required></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Date de publication *</label>
+              <input type="date" id="date_publication" required>
+            </div>
+            <div class="form-group">
+              <label>&nbsp;</label>
+              <div class="form-check">
+                <input type="checkbox" id="est_publie" checked>
+                <label for="est_publie">Publie</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Image</label>
+            <input type="file" id="image_file" accept="image/*">
+            <div class="hint">JPEG, PNG, GIF, WebP - Max 5 Mo</div>
+            <div id="image-preview" style="margin-top:10px"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-primary" id="btn-save" onclick="saveNews()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="delete-overlay">
+    <div class="modal" style="max-width:400px">
+      <div class="modal-header"><h3>Confirmer la suppression</h3><button class="modal-close" onclick="closeDeleteModal()">&times;</button></div>
+      <div class="modal-body"><p>Voulez-vous vraiment supprimer cette actualite ?</p><p id="delete-name" style="font-weight:600;margin-top:8px"></p></div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeDeleteModal()">Annuler</button>
+        <button class="btn btn-danger" id="btn-confirm-delete" onclick="confirmDelete()">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+  <script>
+    var currentPage = 1;
+    var totalPages = 1;
+    var deleteId = null;
+
+    if (!initAdminPage('actualites', 'Actualites')) throw new Error('Auth required');
+
+    loadNews();
+    document.getElementById('search-input').addEventListener('input', debounce(function() { currentPage = 1; loadNews(); }, 300));
+
+    function debounce(fn, ms) { var t; return function() { clearTimeout(t); var a = arguments; var ctx = this; t = setTimeout(function() { fn.apply(ctx, a); }, ms); }; }
+
+    function loadNews() {
+      var search = document.getElementById('search-input').value;
+      var limit = 10;
+      var offset = (currentPage - 1) * limit;
+      AdminAPI.get('actualites?limit=' + limit + '&offset=' + offset + '&search=' + encodeURIComponent(search)).then(function(d) {
+        var tbody = document.getElementById('news-table');
+        if (d.data.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="table-empty">Aucune actualite trouvee</td></tr>'; document.getElementById('pagination').innerHTML = ''; return; }
+        tbody.innerHTML = d.data.map(function(n) {
+          var img = n.image_url ? '<img src="' + n.image_url + '" style="width:50px;height:50px;object-fit:cover;border-radius:6px">' : '<div style="width:50px;height:50px;background:#eee;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:.7rem">Aucune</div>';
+          return '<tr>' +
+            '<td>' + img + '</td>' +
+            '<td>' + AdminUtils.escapeHtml(AdminUtils.truncate(n.titre_fr, 35)) + '</td>' +
+            '<td dir="rtl">' + AdminUtils.escapeHtml(AdminUtils.truncate(n.titre_ar, 35)) + '</td>' +
+            '<td>' + AdminUtils.formatDate(n.date_publication) + '</td>' +
+            '<td>' + (n.est_publie ? '<span style="color:var(--success)">Publie</span>' : '<span style="color:var(--warning)">Brouillon</span>') + '</td>' +
+            '<td><div class="btn-group">' +
+            '<button class="btn-icon" title="Modifier" onclick="editNews(' + n.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
+            '<button class="btn-icon" title="Supprimer" onclick="deleteNews(' + n.id + ',\'' + AdminUtils.escapeHtml(n.titre_fr).replace(/'/g, "\\'") + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--danger)"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>' +
+            '</div></td></tr>';
+        }).join('');
+        totalPages = Math.ceil(d.total / limit);
+        renderPagination();
+      }).catch(function() { AdminToast('Erreur de chargement', 'error'); });
+    }
+
+    function renderPagination() {
+      var html = '<button ' + (currentPage <= 1 ? 'disabled' : '') + ' onclick="goPage(' + (currentPage - 1) + ')">Precedent</button>';
+      html += '<span class="page-info">Page ' + currentPage + ' / ' + totalPages + '</span>';
+      html += '<button ' + (currentPage >= totalPages ? 'disabled' : '') + ' onclick="goPage(' + (currentPage + 1) + ')">Suivant</button>';
+      document.getElementById('pagination').innerHTML = html;
+    }
+    window.goPage = function(p) { currentPage = p; loadNews(); };
+
+    window.openModal = function(id) {
+      document.getElementById('edit-id').value = '';
+      document.getElementById('news-form').reset();
+      document.getElementById('est_publie').checked = true;
+      document.getElementById('modal-title').textContent = 'Nouvelle actualite';
+      document.getElementById('image-preview').innerHTML = '';
+      document.getElementById('image_file').value = '';
+      document.getElementById('form-alert').className = 'alert';
+      document.getElementById('modal-overlay').classList.add('show');
+    };
+
+    window.closeModal = function() { document.getElementById('modal-overlay').classList.remove('show'); };
+
+    window.editNews = function(id) {
+      AdminAPI.get('actualites/' + id).then(function(n) {
+        document.getElementById('edit-id').value = n.id;
+        document.getElementById('titre_fr').value = n.titre_fr;
+        document.getElementById('titre_ar').value = n.titre_ar;
+        document.getElementById('contenu_fr').value = n.contenu_fr;
+        document.getElementById('contenu_ar').value = n.contenu_ar;
+        document.getElementById('date_publication').value = n.date_publication ? n.date_publication.split('T')[0] : '';
+        document.getElementById('est_publie').checked = !!n.est_publie;
+        document.getElementById('modal-title').textContent = 'Modifier l\'actualite';
+        document.getElementById('image_file').value = '';
+        if (n.image_url) {
+          document.getElementById('image-preview').innerHTML = '<img src="' + n.image_url + '" style="max-width:200px;border-radius:6px">';
+        } else {
+          document.getElementById('image-preview').innerHTML = '';
+        }
+        document.getElementById('form-alert').className = 'alert';
+        document.getElementById('modal-overlay').classList.add('show');
+      }).catch(function() { AdminToast('Erreur de chargement', 'error'); });
+    };
+
+    window.saveNews = function() {
+      var id = document.getElementById('edit-id').value;
+      var data = {
+        titre_fr: document.getElementById('titre_fr').value.trim(),
+        titre_ar: document.getElementById('titre_ar').value.trim(),
+        contenu_fr: document.getElementById('contenu_fr').value.trim(),
+        contenu_ar: document.getElementById('contenu_ar').value.trim(),
+        date_publication: document.getElementById('date_publication').value,
+        est_publie: document.getElementById('est_publie').checked ? 1 : 0
+      };
+      if (!data.titre_fr || !data.titre_ar || !data.contenu_fr || !data.contenu_ar || !data.date_publication) {
+        AdminAlert('form-alert', 'Veuillez remplir tous les champs obligatoires', 'danger');
+        return;
+      }
+      var btn = document.getElementById('btn-save');
+      btn.disabled = true;
+      var promise = id ? AdminAPI.put('actualites/' + id, data) : AdminAPI.post('actualites', data);
+      promise.then(function(result) {
+        var fileInput = document.getElementById('image_file');
+        if (fileInput.files.length > 0) {
+          var fd = new FormData();
+          fd.append('image', fileInput.files[0]);
+          return AdminAPI.upload('actualites/' + result.id + '/image', fd).then(function() { return result; });
+        }
+        return result;
+      }).then(function() {
+        AdminToast(id ? 'Actualite modifiee' : 'Actualite creee', 'success');
+        closeModal();
+        loadNews();
+      }).catch(function(err) {
+        AdminAlert('form-alert', err.error || 'Erreur lors de l\'enregistrement', 'danger');
+      }).finally(function() { btn.disabled = false; });
+    };
+
+    window.deleteNews = function(id, title) {
+      deleteId = id;
+      document.getElementById('delete-name').textContent = title;
+      document.getElementById('delete-overlay').classList.add('show');
+    };
+    window.closeDeleteModal = function() { document.getElementById('delete-overlay').classList.remove('show'); deleteId = null; };
+    window.confirmDelete = function() {
+      if (!deleteId) return;
+      AdminAPI.del('actualites/' + deleteId).then(function() {
+        AdminToast('Actualite supprimee', 'success');
+        closeDeleteModal();
+        loadNews();
+      }).catch(function() { AdminToast('Erreur de suppression', 'error'); });
+    };
+  </script>
+</body>
+</html>

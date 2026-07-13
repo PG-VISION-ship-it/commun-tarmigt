@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Actualités — Commune de Tarmigt</title>
 <meta name="description" content="Retrouvez toutes les actualités de la commune de Tarmigt : annonces, événements, projets et informations locales.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Work+Sans:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -49,6 +50,7 @@
     <div class="card-grid" id="news-list">
       <p class="state-msg" data-i18n="loading">Chargement…</p>
     </div>
+    <div class="pagination" id="pagination" style="margin-top:32px"></div>
   </div>
 </section>
 
@@ -63,12 +65,12 @@
   <div class="container footer-grid">
     <div>
       <h5 data-i18n="footer_about_title">Commune de Tarmigt</h5>
-      <p data-i18n="footer_about_text">Portail officiel d'information et de services de la commune rurale de Tarmigt, province de Ouarzazate.</p>
+      <p data-i18n="footer_about_text">Portail officiel d'information et de services de la commune rurale de Tarmigt, province d'Ouarzazate.</p>
     </div>
     <div>
       <h5 data-i18n="footer_contact_title">Contact</h5>
       <p data-i18n="footer_address">Siège de la commune, Tarmigt, Ouarzazate</p>
-      <p>Tél : 05XX-XXXXXX</p>
+      <p>Tél : 05458585525</p>
       <p>Email : contact@tarmigt.ma</p>
     </div>
     <div>
@@ -88,11 +90,14 @@
 <script src="main.js"></script>
 <script>
 let allNews = [];
+let currentPage = 1;
+const PAGE_SIZE = 9;
 
 async function loadNews(){
   const el = document.getElementById("news-list");
   try{
-    allNews = await apiGet("/actualites");
+    const res = await apiGet("/actualites?limit=100");
+    allNews = Array.isArray(res) ? res : [];
     renderNews();
   }catch(e){
     el.innerHTML = `<p class="state-msg">${escapeHtml(e.message)}</p>`;
@@ -102,16 +107,25 @@ async function loadNews(){
 function renderNews(){
   const el = document.getElementById("news-list");
   const lang = getLang();
+  const totalPages = Math.ceil(allNews.length / PAGE_SIZE);
+  if (currentPage > totalPages) currentPage = 1;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = allNews.slice(start, start + PAGE_SIZE);
+
   if(!allNews.length){
     el.innerHTML = `<p class="state-msg">${I18N[lang].empty_news}</p>`;
+    document.getElementById("pagination").innerHTML = "";
     return;
   }
-  el.innerHTML = allNews.map(item => {
+  el.innerHTML = pageItems.map(item => {
     const titre = lang === "ar" ? item.titre_ar : item.titre_fr;
     const contenu = lang === "ar" ? item.contenu_ar : item.contenu_fr;
+    const mediaHtml = item.image_url
+      ? '<img src="' + escapeHtml(item.image_url) + '" alt="' + escapeHtml(titre) + '" style="width:100%;height:100%;object-fit:cover">'
+      : 'Tarmigt';
     return `
       <div class="card" data-id="${item.id}">
-        <div class="card-media">Tarmigt</div>
+        <div class="card-media">${mediaHtml}</div>
         <div class="card-body">
           <span class="card-date">${formatDate(item.date_publication, lang)}</span>
           <h4>${escapeHtml(titre)}</h4>
@@ -127,7 +141,22 @@ function renderNews(){
       openModal(link.dataset.id);
     });
   });
+
+  renderPagination(totalPages);
 }
+
+function renderPagination(totalPages){
+  const el = document.getElementById("pagination");
+  if(totalPages <= 1){ el.innerHTML = ""; return; }
+  let html = '<button ' + (currentPage <= 1 ? 'disabled' : '') + ' onclick="goPage(' + (currentPage - 1) + ')">←</button>';
+  for(let i = 1; i <= totalPages; i++){
+    html += '<button class="' + (i === currentPage ? 'active' : '') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+  }
+  html += '<button ' + (currentPage >= totalPages ? 'disabled' : '') + ' onclick="goPage(' + (currentPage + 1) + ')">→</button>';
+  el.innerHTML = html;
+}
+
+window.goPage = function(p){ currentPage = p; renderNews(); window.scrollTo({top: 0, behavior: 'smooth'}); };
 
 function openModal(id){
   const lang = getLang();
@@ -135,7 +164,9 @@ function openModal(id){
   if(!item) return;
   const titre = lang === "ar" ? item.titre_ar : item.titre_fr;
   const contenu = lang === "ar" ? item.contenu_ar : item.contenu_fr;
+  const imgHtml = item.image_url ? '<img src="' + escapeHtml(item.image_url) + '" style="width:100%;max-height:300px;object-fit:cover;border-radius:var(--radius);margin-bottom:16px">' : '';
   document.getElementById("modal-content").innerHTML = `
+    ${imgHtml}
     <span class="card-date">${formatDate(item.date_publication, lang)}</span>
     <h3>${escapeHtml(titre)}</h3>
     <div class="modal-body"><p>${escapeHtml(contenu)}</p></div>

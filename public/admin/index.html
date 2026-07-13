@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tableau de bord - Administration</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="admin-wrapper">
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar" id="topbar"></header>
+      <div class="content">
+        <div class="page-header">
+          <h2>Tableau de bord</h2>
+          <p>Vue d'ensemble de la commune</p>
+        </div>
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card"><div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2"/></svg></div><div class="stat-info"><h3 id="stat-news">-</h3><p>Actualites</p></div></div>
+          <div class="stat-card"><div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div><div class="stat-info"><h3 id="stat-services">-</h3><p>Services</p></div></div>
+          <div class="stat-card"><div class="stat-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="stat-info"><h3 id="stat-messages">-</h3><p>Messages</p></div></div>
+          <div class="stat-card"><div class="stat-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div class="stat-info"><h3 id="stat-unread">-</h3><p>Non lus</p></div></div>
+        </div>
+        <div class="dashboard-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="card">
+            <div class="card-header"><h3>Actualites recentes</h3><a href="actualites.html" class="btn btn-outline btn-sm">Voir tout</a></div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table>
+                  <thead><tr><th>Titre</th><th>Date</th><th>Etat</th></tr></thead>
+                  <tbody id="recent-news"><tr><td colspan="3" class="loading"><div class="spinner"></div></td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Messages recents</h3><a href="messages.html" class="btn btn-outline btn-sm">Voir tout</a></div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table>
+                  <thead><tr><th>De</th><th>Sujet</th><th>Etat</th></tr></thead>
+                  <tbody id="recent-messages"><tr><td colspan="3" class="loading"><div class="spinner"></div></td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="js/admin.js"></script>
+  <script>
+    (function() {
+      if (!initAdminPage('dashboard', 'Tableau de bord')) return;
+      loadStats();
+      function loadStats() {
+        AdminAPI.get('stats').then(function(d) {
+          document.getElementById('stat-news').textContent = d.actualites.total;
+          document.getElementById('stat-services').textContent = d.services.total;
+          document.getElementById('stat-messages').textContent = d.contacts.total;
+          document.getElementById('stat-unread').textContent = d.contacts.unread;
+          var newsBody = document.getElementById('recent-news');
+          if (d.recentNews.length === 0) { newsBody.innerHTML = '<tr><td colspan="3" class="table-empty">Aucune actualite</td></tr>'; return; }
+          newsBody.innerHTML = d.recentNews.map(function(n) {
+            return '<tr><td>' + AdminUtils.escapeHtml(AdminUtils.truncate(n.titre_fr, 40)) + '</td><td>' + AdminUtils.formatDate(n.date_publication) + '</td><td>' + (n.est_publie ? '<span style="color:var(--success)">Publie</span>' : '<span style="color:var(--warning)">Brouillon</span>') + '</td></tr>';
+          }).join('');
+          var msgBody = document.getElementById('recent-messages');
+          if (d.recentContacts.length === 0) { msgBody.innerHTML = '<tr><td colspan="3" class="table-empty">Aucun message</td></tr>'; return; }
+          msgBody.innerHTML = d.recentContacts.map(function(m) {
+            return '<tr><td>' + AdminUtils.escapeHtml(AdminUtils.truncate(m.name, 25)) + '</td><td>' + AdminUtils.escapeHtml(AdminUtils.truncate(m.subject, 30)) + '</td><td>' + (m.is_read ? '<span style="color:var(--text-light)">Lu</span>' : '<span style="color:var(--danger)">Non lu</span>') + '</td></tr>';
+          }).join('');
+        }).catch(function() {
+          AdminToast('Erreur lors du chargement des stats', 'error');
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

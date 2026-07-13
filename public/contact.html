@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contact — Commune de Tarmigt</title>
 <meta name="description" content="Contactez la commune de Tarmigt : adresse, téléphone, email, horaires d'accueil et formulaire de contact.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Work+Sans:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -67,7 +68,7 @@
             <div class="info-icon">📞</div>
             <div>
               <span class="info-label" data-i18n="contact_phone_label">Téléphone</span>
-              <p><a href="tel:+21205458585525">05458585525</a></p>
+              <p><a href="tel:+2125458585525">05458585525</a></p>
             </div>
           </div>
 
@@ -158,7 +159,7 @@
     <div>
       <h5 data-i18n="footer_contact_title">Contact</h5>
       <p data-i18n="footer_address">Siège de la commune, Tarmigt, Ouarzazate</p>
-      <p>Tél : 05XX-XXXXXX</p>
+      <p>Tél : 05458585525</p>
       <p>Email : contact@tarmigt.ma</p>
     </div>
     <div>
@@ -177,7 +178,6 @@
 <script src="js/lang.js"></script>
 <script src="main.js"></script>
 <script>
-// Applique aussi les traductions des attributs placeholder
 function applyPlaceholders(){
   const lang = getLang();
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
@@ -196,23 +196,45 @@ function isValidEmail(value){
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+function isValidPhone(value){
+  if(!value) return true;
+  return /^[\d\s\-\+\(\)]{6,20}$/.test(value);
+}
+
+function clearValidation(){
+  form.querySelectorAll("input, select, textarea").forEach(el => el.classList.remove("invalid"));
+}
+
+function markInvalid(el){
+  el.classList.add("invalid");
+  el.addEventListener("input", function handler(){
+    el.classList.remove("invalid");
+    el.removeEventListener("input", handler);
+  }, { once: true });
+}
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const lang = getLang();
   feedback.className = "form-feedback";
+  clearValidation();
 
   const name = document.getElementById("cf-name").value.trim();
   const email = document.getElementById("cf-email").value.trim();
+  const phone = document.getElementById("cf-phone").value.trim();
   const subject = document.getElementById("cf-subject").value;
   const message = document.getElementById("cf-message").value.trim();
 
-  if (!name || !email || !subject || !message){
+  let hasError = false;
+
+  if (!name){ markInvalid(document.getElementById("cf-name")); hasError = true; }
+  if (!email || !isValidEmail(email)){ markInvalid(document.getElementById("cf-email")); hasError = true; }
+  if (phone && !isValidPhone(phone)){ markInvalid(document.getElementById("cf-phone")); hasError = true; }
+  if (!subject){ markInvalid(document.getElementById("cf-subject")); hasError = true; }
+  if (!message){ markInvalid(document.getElementById("cf-message")); hasError = true; }
+
+  if (hasError){
     feedback.textContent = I18N[lang].form_error_required;
-    feedback.classList.add("error");
-    return;
-  }
-  if (!isValidEmail(email)){
-    feedback.textContent = I18N[lang].form_error_email;
     feedback.classList.add("error");
     return;
   }
@@ -222,7 +244,7 @@ form.addEventListener("submit", async (e) => {
   submitBtn.textContent = I18N[lang].form_sending;
 
   try {
-    await apiPost("/contact", { name, email, phone: document.getElementById("cf-phone").value.trim(), subject, message });
+    await apiPost("/contact", { name, email, phone, subject, message });
     feedback.textContent = I18N[lang].form_success;
     feedback.classList.add("success");
     form.reset();
@@ -237,6 +259,7 @@ form.addEventListener("submit", async (e) => {
 document.addEventListener("langchange", () => {
   feedback.textContent = "";
   feedback.className = "form-feedback";
+  clearValidation();
 });
 </script>
 </body>

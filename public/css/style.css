@@ -338,9 +338,59 @@ section{ padding: 64px 0; }
   color: var(--green);
 }
 
+.category-btn{
+  padding:7px 16px;
+  border-radius:999px;
+  border:1px solid var(--sand-deep);
+  background:var(--white);
+  font-size:13px;
+  font-weight:600;
+  color:var(--ink-soft);
+  cursor:pointer;
+  transition:all .2s;
+}
+.category-btn:hover{ border-color:var(--green); color:var(--green); }
+.category-btn.active{
+  background:var(--green);
+  color:var(--sand);
+  border-color:var(--green);
+}
+
 .section-foot{
   margin-top: 32px;
   text-align:center;
+}
+
+.pagination{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.pagination button{
+  padding:7px 14px;
+  border:1px solid var(--sand-deep);
+  border-radius:var(--radius);
+  background:var(--white);
+  font-size:13px;
+  font-weight:600;
+  color:var(--ink-soft);
+  cursor:pointer;
+  transition:all .2s;
+}
+.pagination button:hover:not(:disabled){
+  border-color:var(--green);
+  color:var(--green);
+}
+.pagination button.active{
+  background:var(--green);
+  color:var(--sand);
+  border-color:var(--green);
+}
+.pagination button:disabled{
+  opacity:.4;
+  cursor:not-allowed;
 }
 .btn{
   display:inline-block;
@@ -592,6 +642,12 @@ footer{
   border-color: var(--green);
   box-shadow: 0 0 0 3px rgba(29,75,67,.12);
 }
+.form-group input.invalid,
+.form-group select.invalid,
+.form-group textarea.invalid{
+  border-color: var(--terracotta);
+  box-shadow: 0 0 0 3px rgba(193,80,46,.12);
+}
 .contact-form-card .btn{
   width:100%;
   text-align:center;
@@ -633,6 +689,20 @@ footer{
   .card-grid,
   .services-grid,
   .footer-grid{ grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px){
+  .hero-inner{ padding: 48px 0 36px; }
+  .hero-stats{ flex-direction:column; gap:10px; }
+  .stat-chip{ min-width:auto; }
+  section{ padding: 40px 0; }
+  .section-head{ margin-bottom: 24px; }
+  .card-body{ padding: 14px 16px 18px; }
+  .card-body h4{ font-size:16px; }
+  .service-row{ padding: 16px; }
+  .contact-info-card,
+  .contact-form-card,
+  .map-card{ padding: 20px; }
 }
 
 /* focus visibility */

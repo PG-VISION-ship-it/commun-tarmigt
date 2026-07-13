@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Commune de Tarmigt — Portail officiel</title>
 <meta name="description" content="Portail officiel de la commune de Tarmigt : actualités, services administratifs et informations pratiques.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Work+Sans:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -127,7 +128,7 @@
     <div>
       <h5 data-i18n="footer_contact_title">Contact</h5>
       <p data-i18n="footer_address">Siège de la commune, Tarmigt, Ouarzazate</p>
-      <p>Tél : 05XX-XXXXXX</p>
+      <p>Tél : 05458585525</p>
       <p>Email : contact@tarmigt.ma</p>
     </div>
     <div>
@@ -164,9 +165,12 @@ function renderNewsCard(item){
   const lang = getLang();
   const titre = lang === "ar" ? item.titre_ar : item.titre_fr;
   const contenu = lang === "ar" ? item.contenu_ar : item.contenu_fr;
+  const mediaHtml = item.image_url
+    ? '<img src="' + escapeHtml(item.image_url) + '" alt="' + escapeHtml(titre) + '" style="width:100%;height:100%;object-fit:cover">'
+    : 'Tarmigt';
   return `
     <div class="card">
-      <div class="card-media">Tarmigt</div>
+      <div class="card-media">${mediaHtml}</div>
       <div class="card-body">
         <span class="card-date">${formatDate(item.date_publication, lang)}</span>
         <h4>${escapeHtml(titre)}</h4>
@@ -216,3 +220,4 @@ document.addEventListener("langchange", () => {
 </script>
 </body>
 </html>
+

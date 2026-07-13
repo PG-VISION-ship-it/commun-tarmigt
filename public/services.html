@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Services administratifs — Commune de Tarmigt</title>
 <meta name="description" content="Consultez les services administratifs de la commune de Tarmigt : démarches, documents requis, délais et coûts.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Work+Sans:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -46,9 +47,11 @@
       <span class="eyebrow" data-i18n="services_eyebrow">Démarches</span>
       <h3 data-i18n="page_services_title">Tous les services administratifs</h3>
     </div>
+    <div class="category-filter" id="category-filter" style="margin-bottom:24px;display:flex;flex-wrap:wrap;gap:8px"></div>
     <div class="services-grid" id="services-list" style="grid-template-columns:1fr;">
       <p class="state-msg" data-i18n="loading">Chargement…</p>
     </div>
+    <div class="pagination" id="pagination" style="margin-top:32px"></div>
   </div>
 </section>
 
@@ -63,12 +66,12 @@
   <div class="container footer-grid">
     <div>
       <h5 data-i18n="footer_about_title">Commune de Tarmigt</h5>
-      <p data-i18n="footer_about_text">Portail officiel d'information et de services de la commune rurale de Tarmigt, province de Ouarzazate.</p>
+      <p data-i18n="footer_about_text">Portail officiel d'information et de services de la commune rurale de Tarmigt, province d'Ouarzazate.</p>
     </div>
     <div>
       <h5 data-i18n="footer_contact_title">Contact</h5>
       <p data-i18n="footer_address">Siège de la commune, Tarmigt, Ouarzazate</p>
-      <p>Tél : 05XX-XXXXXX</p>
+      <p>Tél : 05458585525</p>
       <p>Email : contact@tarmigt.ma</p>
     </div>
     <div>
@@ -88,25 +91,79 @@
 <script src="main.js"></script>
 <script>
 let allServices = [];
+let activeCategory = "";
+let currentPage = 1;
+const PAGE_SIZE = 10;
 
 async function loadServices(){
   const el = document.getElementById("services-list");
   try{
-    allServices = await apiGet("/services");
+    const res = await apiGet("/services?limit=200");
+    allServices = Array.isArray(res) ? res : [];
+    buildCategories();
     renderServices();
   }catch(e){
     el.innerHTML = `<p class="state-msg">${escapeHtml(e.message)}</p>`;
   }
 }
 
+function buildCategories(){
+  const cats = {};
+  allServices.forEach(s => { if(s.categorie) cats[s.categorie] = (cats[s.categorie]||0)+1; });
+  const el = document.getElementById("category-filter");
+  const lang = getLang();
+  const allLabel = lang === "ar" ? "الكل" : "Tous";
+  let html = '<button class="category-btn active" onclick="filterCategory(\'\')">' + allLabel + '</button>';
+  Object.keys(cats).sort().forEach(c => {
+    html += '<button class="category-btn" onclick="filterCategory(\'' + escapeHtml(c).replace(/'/g, "\\'") + '\')">' + escapeHtml(c) + ' (' + cats[c] + ')</button>';
+  });
+  el.innerHTML = html;
+  el.querySelectorAll(".category-btn").forEach(btn => {
+    btn.style.cssText = "padding:7px 16px;border-radius:999px;border:1px solid var(--sand-deep);background:var(--white);font-size:13px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:all .2s";
+  });
+  updateCategoryBtnStyles();
+}
+
+function updateCategoryBtnStyles(){
+  document.querySelectorAll(".category-btn").forEach(btn => {
+    const isActive = btn.classList.contains("active");
+    btn.style.background = isActive ? "var(--green)" : "var(--white)";
+    btn.style.color = isActive ? "var(--sand)" : "var(--ink-soft)";
+    btn.style.borderColor = isActive ? "var(--green)" : "var(--sand-deep)";
+  });
+}
+
+window.filterCategory = function(cat){
+  activeCategory = cat;
+  currentPage = 1;
+  document.querySelectorAll(".category-btn").forEach(btn => {
+    const btnCat = btn.getAttribute("onclick").includes("''") ? "" : btn.textContent.split(" (")[0];
+    btn.classList.toggle("active", btnCat === cat);
+  });
+  updateCategoryBtnStyles();
+  renderServices();
+};
+
+function getFilteredServices(){
+  if(!activeCategory) return allServices;
+  return allServices.filter(s => s.categorie === activeCategory);
+}
+
 function renderServices(){
   const el = document.getElementById("services-list");
   const lang = getLang();
-  if(!allServices.length){
+  const filtered = getFilteredServices();
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  if(currentPage > totalPages) currentPage = 1;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+
+  if(!filtered.length){
     el.innerHTML = `<p class="state-msg">${I18N[lang].empty_services}</p>`;
+    document.getElementById("pagination").innerHTML = "";
     return;
   }
-  el.innerHTML = allServices.map(item => {
+  el.innerHTML = pageItems.map(item => {
     const nom = lang === "ar" ? item.nom_ar : item.nom_fr;
     const desc = lang === "ar" ? item.description_ar : item.description_fr;
     return `
@@ -118,6 +175,7 @@ function renderServices(){
           <div class="service-meta">
             <span>${I18N[lang].delay}: ${escapeHtml(item.delai || "—")}</span>
             <span>${I18N[lang].cost}: ${escapeHtml(item.cout || "—")}</span>
+            ${item.categorie ? '<span>' + escapeHtml(item.categorie) + '</span>' : ''}
           </div>
           <a class="card-link" href="#" data-id="${item.id}" style="display:inline-block;margin-top:10px;">${I18N[lang].documents_required} →</a>
         </div>
@@ -130,7 +188,22 @@ function renderServices(){
       openModal(link.dataset.id);
     });
   });
+
+  renderPagination(totalPages);
 }
+
+function renderPagination(totalPages){
+  const el = document.getElementById("pagination");
+  if(totalPages <= 1){ el.innerHTML = ""; return; }
+  let html = '<button ' + (currentPage <= 1 ? 'disabled' : '') + ' onclick="goPage(' + (currentPage - 1) + ')">←</button>';
+  for(let i = 1; i <= totalPages; i++){
+    html += '<button class="' + (i === currentPage ? 'active' : '') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+  }
+  html += '<button ' + (currentPage >= totalPages ? 'disabled' : '') + ' onclick="goPage(' + (currentPage + 1) + ')">→</button>';
+  el.innerHTML = html;
+}
+
+window.goPage = function(p){ currentPage = p; renderServices(); window.scrollTo({top: 0, behavior: 'smooth'}); };
 
 function openModal(id){
   const lang = getLang();
@@ -144,7 +217,7 @@ function openModal(id){
     <div class="modal-body"><p>${escapeHtml(desc)}</p></div>
     <dl>
       <dt>${I18N[lang].documents_required}</dt>
-      <dd>${escapeHtml(docs)}</dd>
+      <dd>${escapeHtml(docs || "—")}</dd>
       <dt>${I18N[lang].delay}</dt>
       <dd>${escapeHtml(item.delai || "—")}</dd>
       <dt>${I18N[lang].cost}</dt>
@@ -162,7 +235,10 @@ document.getElementById("modal-overlay").addEventListener("click", (e) => {
 });
 
 document.addEventListener("DOMContentLoaded", loadServices);
-document.addEventListener("langchange", renderServices);
+document.addEventListener("langchange", function(){
+  buildCategories();
+  renderServices();
+});
 </script>
 </body>
 </html>

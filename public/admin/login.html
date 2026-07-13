@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion - Administration Commune de Tarmigt</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-box">
+      <div class="logo">
+        <img src="/tarmigt-logo.svg" alt="Logo Commune de Tarmigt">
+        <h1>Commune de Tarmigt</h1>
+        <p>Espace d'administration</p>
+      </div>
+      <div class="login-error" id="login-error"></div>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="username">Nom d'utilisateur</label>
+          <input type="text" id="username" name="username" placeholder="Entrez votre identifiant" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input type="password" id="password" name="password" placeholder="Entrez votre mot de passe" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn-login" id="btn-login">Se connecter</button>
+      </form>
+    </div>
+  </div>
+  <script>
+    (function() {
+      var token = localStorage.getItem('admin_token');
+      if (token) { window.location.href = 'index.html'; return; }
+
+      var form = document.getElementById('login-form');
+      var errorDiv = document.getElementById('login-error');
+      var btn = document.getElementById('btn-login');
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var username = document.getElementById('username').value.trim();
+        var password = document.getElementById('password').value;
+        if (!username || !password) {
+          errorDiv.textContent = 'Veuillez remplir tous les champs';
+          errorDiv.style.display = 'block';
+          return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Connexion en cours...';
+        errorDiv.style.display = 'none';
+
+        fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: username, password: password })
+        })
+        .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
+        .then(function(result) {
+          if (!result.ok) {
+            errorDiv.textContent = result.data.error || 'Identifiants incorrects';
+            errorDiv.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Se connecter';
+            return;
+          }
+          localStorage.setItem('admin_token', result.data.token);
+          localStorage.setItem('admin_user', JSON.stringify(result.data.user));
+          window.location.href = 'index.html';
+        })
+        .catch(function() {
+          errorDiv.textContent = 'Erreur de connexion au serveur';
+          errorDiv.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Se connecter';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

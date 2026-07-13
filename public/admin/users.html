@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Utilisateurs - Administration</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="admin-wrapper">
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="topbar" id="topbar"></header>
+      <div class="content">
+        <div class="page-header">
+          <h2>Gestion des utilisateurs</h2>
+          <p>Creer, modifier et supprimer des comptes administrateurs</p>
+        </div>
+        <div class="toolbar">
+          <div></div>
+          <button class="btn btn-primary" onclick="openModal()">+ Nouvel utilisateur</button>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table>
+                <thead><tr><th>Nom</th><th>Utilisateur</th><th>Email</th><th>Role</th><th>Cree le</th><th>Actions</th></tr></thead>
+                <tbody id="users-table"><tr><td colspan="6" class="loading"><div class="spinner"></div></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">Nouvel utilisateur</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="alert" id="form-alert"></div>
+        <form id="user-form">
+          <input type="hidden" id="edit-id">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nom complet *</label>
+              <input type="text" id="full_name" required>
+            </div>
+            <div class="form-group">
+              <label>Nom d'utilisateur *</label>
+              <input type="text" id="username" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email *</label>
+              <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+              <label>Role</label>
+              <select id="role">
+                <option value="admin">Administrateur</option>
+                <option value="editor">Editeur</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label id="password-label">Mot de passe *</label>
+            <input type="password" id="password" minlength="6">
+            <div class="hint" id="password-hint">Minimum 6 caracteres</div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-primary" id="btn-save" onclick="saveUser()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="delete-overlay">
+    <div class="modal" style="max-width:400px">
+      <div class="modal-header"><h3>Confirmer la suppression</h3><button class="modal-close" onclick="closeDeleteModal()">&times;</button></div>
+      <div class="modal-body"><p>Voulez-vous vraiment supprimer cet utilisateur ?</p><p id="delete-name" style="font-weight:600;margin-top:8px"></p></div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeDeleteModal()">Annuler</button>
+        <button class="btn btn-danger" id="btn-confirm-delete" onclick="confirmDelete()">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+  <script>
+    var deleteId = null;
+
+    if (!initAdminPage('users', 'Utilisateurs')) throw new Error('Auth required');
+
+    loadUsers();
+
+    function loadUsers() {
+      AdminAPI.get('users').then(function(users) {
+        var tbody = document.getElementById('users-table');
+        if (users.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="table-empty">Aucun utilisateur</td></tr>'; return; }
+        tbody.innerHTML = users.map(function(u) {
+          var currentUser = AdminAuth.getUser();
+          var isSelf = currentUser && currentUser.id === u.id;
+          return '<tr>' +
+            '<td>' + AdminUtils.escapeHtml(u.full_name) + '</td>' +
+            '<td>' + AdminUtils.escapeHtml(u.username) + '</td>' +
+            '<td>' + AdminUtils.escapeHtml(u.email) + '</td>' +
+            '<td>' + (u.role === 'admin' ? '<span style="color:var(--primary)">Admin</span>' : '<span style="color:var(--info)">Editeur</span>') + '</td>' +
+            '<td>' + AdminUtils.formatDate(u.created_at) + '</td>' +
+            '<td><div class="btn-group">' +
+            '<button class="btn-icon" title="Modifier" onclick="editUser(' + u.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
+            (isSelf ? '' : '<button class="btn-icon" title="Supprimer" onclick="deleteUser(' + u.id + ',\'' + AdminUtils.escapeHtml(u.full_name).replace(/'/g, "\\'") + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--danger)"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>') +
+            '</div></td></tr>';
+        }).join('');
+      }).catch(function() { AdminToast('Erreur de chargement', 'error'); });
+    }
+
+    window.openModal = function() {
+      document.getElementById('edit-id').value = '';
+      document.getElementById('user-form').reset();
+      document.getElementById('modal-title').textContent = 'Nouvel utilisateur';
+      document.getElementById('password').required = true;
+      document.getElementById('password-label').textContent = 'Mot de passe *';
+      document.getElementById('password-hint').textContent = 'Minimum 6 caracteres';
+      document.getElementById('form-alert').className = 'alert';
+      document.getElementById('modal-overlay').classList.add('show');
+    };
+
+    window.closeModal = function() { document.getElementById('modal-overlay').classList.remove('show'); };
+
+    window.editUser = function(id) {
+      AdminAPI.get('users').then(function(users) {
+        var u = users.find(function(user) { return user.id === id; });
+        if (!u) return;
+        document.getElementById('edit-id').value = u.id;
+        document.getElementById('full_name').value = u.full_name;
+        document.getElementById('username').value = u.username;
+        document.getElementById('email').value = u.email;
+        document.getElementById('role').value = u.role;
+        document.getElementById('password').required = false;
+        document.getElementById('password-label').textContent = 'Mot de passe (laisser vide pour garder l\'actuel)';
+        document.getElementById('password-hint').textContent = 'Minimum 6 caracteres si modifie';
+        document.getElementById('modal-title').textContent = 'Modifier l\'utilisateur';
+        document.getElementById('form-alert').className = 'alert';
+        document.getElementById('modal-overlay').classList.add('show');
+      }).catch(function() { AdminToast('Erreur de chargement', 'error'); });
+    };
+
+    window.saveUser = function() {
+      var id = document.getElementById('edit-id').value;
+      var data = {
+        full_name: document.getElementById('full_name').value.trim(),
+        username: document.getElementById('username').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        role: document.getElementById('role').value
+      };
+      var password = document.getElementById('password').value;
+      if (password) data.password = password;
+
+      if (!data.full_name || !data.username || !data.email) {
+        AdminAlert('form-alert', 'Veuillez remplir tous les champs obligatoires', 'danger');
+        return;
+      }
+      if (!id && !password) {
+        AdminAlert('form-alert', 'Le mot de passe est requis pour un nouvel utilisateur', 'danger');
+        return;
+      }
+      if (password && password.length < 6) {
+        AdminAlert('form-alert', 'Le mot de passe doit contenir au moins 6 caracteres', 'danger');
+        return;
+      }
+
+      var btn = document.getElementById('btn-save');
+      btn.disabled = true;
+      var promise = id ? AdminAPI.put('users/' + id, data) : AdminAPI.post('users', data);
+      promise.then(function() {
+        AdminToast(id ? 'Utilisateur modifie' : 'Utilisateur cree', 'success');
+        closeModal();
+        loadUsers();
+      }).catch(function(err) {
+        AdminAlert('form-alert', err.error || 'Erreur lors de l\'enregistrement', 'danger');
+      }).finally(function() { btn.disabled = false; });
+    };
+
+    window.deleteUser = function(id, name) {
+      deleteId = id;
+      document.getElementById('delete-name').textContent = name;
+      document.getElementById('delete-overlay').classList.add('show');
+    };
+    window.closeDeleteModal = function() { document.getElementById('delete-overlay').classList.remove('show'); deleteId = null; };
+    window.confirmDelete = function() {
+      if (!deleteId) return;
+      AdminAPI.del('users/' + deleteId).then(function() {
+        AdminToast('Utilisateur supprime', 'success');
+        closeDeleteModal();
+        loadUsers();
+      }).catch(function(err) { AdminToast(err.error || 'Erreur de suppression', 'error'); });
+    };
+  </script>
+</body>
+</html>

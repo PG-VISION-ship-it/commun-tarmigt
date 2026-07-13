@@ -47,3 +47,13 @@ CREATE TABLE IF NOT EXISTS services (
   updated_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_categorie (categorie)
 ) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------
+-- Table : site_settings
+-- Paramètres configurables du site
+-- ---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS site_settings (
+  setting_key    VARCHAR(100) PRIMARY KEY,
+  setting_value  TEXT NOT NULL,
+  updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
