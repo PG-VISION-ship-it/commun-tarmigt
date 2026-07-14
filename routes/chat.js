@@ -152,37 +152,39 @@ ${contextData}`;
 }
 
 router.post("/", chatLimiter, async (req, res) => {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    return res.status(503).json({
-      error:
-        "Le service de chat n'est pas configure. Veuillez ajouter votre cle API OpenAI dans le fichier .env.",
-    });
-  }
-
-  const { messages, lang } = req.body;
-  if (!Array.isArray(messages) || messages.length === 0) {
-    return res.status(400).json({ error: "Messages invalides." });
-  }
-
-  const userLang = lang === "ar" ? "ar" : "fr";
-
-  const [actualites, services, settings] = await Promise.all([
-    fetchActualites(userLang),
-    fetchServices(userLang),
-    fetchSettings(),
-  ]);
-
-  const contextData = buildContext(actualites, services, settings, userLang);
-  const systemPrompt = buildSystemPrompt(contextData, userLang);
-
-  const trimmed = messages.slice(-20).map((m) => ({
-    role: m.role === "user" ? "user" : "assistant",
-    content:
-      typeof m.content === "string" ? m.content.slice(0, 2000) : "",
-  }));
-
   try {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      return res.status(503).json({
+        error:
+          "Le service de chat n'est pas configure. Veuillez ajouter votre cle API OpenAI dans le fichier .env.",
+      });
+    }
+
+    const { messages, lang } = req.body;
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return res.status(400).json({ error: "Messages invalides." });
+    }
+
+    const userLang = lang === "ar" ? "ar" : "fr";
+
+    const [actualites, services, settings] = await Promise.all([
+      fetchActualites(userLang),
+      fetchServices(userLang),
+      fetchSettings(),
+    ]);
+
+    const contextData = buildContext(actualites, services, settings, userLang);
+    const systemPrompt = buildSystemPrompt(contextData, userLang);
+
+    const trimmed = messages.slice(-20).map((m) => ({
+      role: m.role === "user" ? "user" : "assistant",
+      content:
+        typeof m.content === "string" ? m.content.slice(0, 2000) : "",
+    }));
+
+    const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+
     const response = await fetch(
       "https://api.openai.com/v1/chat/completions",
       {
@@ -192,7 +194,7 @@ router.post("/", chatLimiter, async (req, res) => {
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "gpt-3.5-turbo",
+          model: model,
           messages: [
             { role: "system", content: systemPrompt },
             ...trimmed,
@@ -205,7 +207,7 @@ router.post("/", chatLimiter, async (req, res) => {
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      console.error("OpenAI API error:", response.status, err);
+      console.error("OpenAI API error:", response.status, JSON.stringify(err));
       return res.status(502).json({
         error:
           userLang === "ar"
@@ -222,10 +224,10 @@ router.post("/", chatLimiter, async (req, res) => {
         : "Pas de reponse.");
     res.json({ reply });
   } catch (err) {
-    console.error("Chat route error:", err.message);
+    console.error("Chat route error:", err.message, err.stack);
     res.status(500).json({
       error:
-        userLang === "ar"
+        req.body?.lang === "ar"
           ? "خطأ داخلي في الخادم."
           : "Erreur interne du serveur.",
     });
