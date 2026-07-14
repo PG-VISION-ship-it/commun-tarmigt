@@ -117,13 +117,47 @@ router.get('/stats', authMiddleware, async (req, res) => {
     const [recentContacts] = await pool.execute('SELECT id, name, subject, is_read, created_at FROM contacts ORDER BY created_at DESC LIMIT 5');
     const [categories] = await pool.execute('SELECT categorie, COUNT(*) AS count FROM services GROUP BY categorie ORDER BY count DESC');
 
+    const [newsByMonth] = await pool.execute(
+      `SELECT DATE_FORMAT(date_publication, '%Y-%m') AS month,
+              COUNT(*) AS count
+       FROM actualites
+       WHERE date_publication >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+       GROUP BY month
+       ORDER BY month ASC`
+    );
+
+    const [servicesByCategory] = await pool.execute(
+      `SELECT categorie, COUNT(*) AS count
+       FROM services
+       WHERE categorie IS NOT NULL AND categorie != ''
+       GROUP BY categorie
+       ORDER BY count DESC
+       LIMIT 10`
+    );
+
+    const [messagesByMonth] = await pool.execute(
+      `SELECT DATE_FORMAT(created_at, '%Y-%m') AS month,
+              COUNT(*) AS count
+       FROM contacts
+       WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+       GROUP BY month
+       ORDER BY month ASC`
+    );
+
+    const [[readCount]] = await pool.execute('SELECT COUNT(*) AS count FROM contacts WHERE is_read = 1');
+
     res.json({
       actualites: { total: newsCount.count, published: publishedCount.count },
       services: { total: servicesCount.count },
-      contacts: { total: contactsCount.count, unread: unreadCount.count },
+      contacts: { total: contactsCount.count, unread: unreadCount.count, read: readCount.count },
       recentNews,
       recentContacts,
-      categories
+      categories,
+      charts: {
+        newsByMonth,
+        servicesByCategory,
+        messagesByMonth
+      }
     });
   } catch (err) {
     console.error('Stats error:', err);
@@ -559,6 +593,37 @@ router.delete('/users/:id', authMiddleware, requireAdmin, async (req, res) => {
   } catch (err) {
     console.error('Delete user error:', err);
     res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// ── LANGUAGE PREFERENCE ──────────────────────────────────────────────────────
+
+router.get('/language', authMiddleware, async (req, res) => {
+  try {
+    const key = 'lang_' + req.user.id;
+    const [rows] = await pool.execute('SELECT setting_value FROM site_settings WHERE setting_key = ?', [key]);
+    res.json({ language: rows.length > 0 ? rows[0].setting_value : 'fr' });
+  } catch {
+    res.json({ language: 'fr' });
+  }
+});
+
+router.put('/language', authMiddleware, async (req, res) => {
+  try {
+    const { language } = req.body;
+    if (language !== 'fr' && language !== 'ar') {
+      return res.status(400).json({ error: 'Langue invalide' });
+    }
+    const key = 'lang_' + req.user.id;
+    const [existing] = await pool.execute('SELECT setting_key FROM site_settings WHERE setting_key = ?', [key]);
+    if (existing.length > 0) {
+      await pool.execute('UPDATE site_settings SET setting_value = ? WHERE setting_key = ?', [language, key]);
+    } else {
+      await pool.execute('INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?)', [key, language]);
+    }
+    res.json({ success: true, language });
+  } catch {
+    res.json({ success: true, language: req.body.language });
   }
 });
 

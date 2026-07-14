@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Utilisateurs - Administration</title>
+  <title data-i18n="usr_title">Utilisateurs - Administration</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Tajawal:wght@200;300;400;500;700;800;900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css">
+  <script src="js/translations.js"></script>
+  <script src="js/i18n.js"></script>
 </head>
-<body>
+<body data-i18n-page="usr_title">
   <div class="admin-wrapper">
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <aside class="sidebar" id="sidebar"></aside>
@@ -18,18 +20,18 @@
       <header class="topbar" id="topbar"></header>
       <div class="content">
         <div class="page-header">
-          <h2>Gestion des utilisateurs</h2>
-          <p>Creer, modifier et supprimer des comptes administrateurs</p>
+          <h2 data-i18n="usr_heading">Gestion des utilisateurs</h2>
+          <p data-i18n="usr_subtitle">Creer, modifier et supprimer des comptes administrateurs</p>
         </div>
         <div class="toolbar">
           <div></div>
-          <button class="btn btn-primary" onclick="openModal()">+ Nouvel utilisateur</button>
+          <button class="btn btn-primary" onclick="openModal()" data-i18n="usr_new_btn">+ Nouvel utilisateur</button>
         </div>
         <div class="card">
           <div class="card-body">
             <div class="table-responsive">
               <table>
-                <thead><tr><th>Nom</th><th>Utilisateur</th><th>Email</th><th>Role</th><th>Cree le</th><th>Actions</th></tr></thead>
+                <thead><tr><th data-i18n="usr_th_name">Nom</th><th data-i18n="usr_th_username">Utilisateur</th><th data-i18n="usr_th_email">Email</th><th data-i18n="usr_th_role">Role</th><th data-i18n="usr_th_created">Cree le</th><th data-i18n="usr_th_actions">Actions</th></tr></thead>
                 <tbody id="users-table"><tr><td colspan="6" class="loading"><div class="spinner"></div></td></tr></tbody>
               </table>
             </div>
@@ -42,7 +44,7 @@
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <div class="modal-header">
-        <h3 id="modal-title">Nouvel utilisateur</h3>
+        <h3 id="modal-title" data-i18n="usr_modal_new">Nouvel utilisateur</h3>
         <button class="modal-close" onclick="closeModal()">&times;</button>
       </div>
       <div class="modal-body">
@@ -51,48 +53,48 @@
           <input type="hidden" id="edit-id">
           <div class="form-row">
             <div class="form-group">
-              <label>Nom complet *</label>
+              <label data-i18n="usr_label_name">Nom complet *</label>
               <input type="text" id="full_name" required>
             </div>
             <div class="form-group">
-              <label>Nom d'utilisateur *</label>
+              <label data-i18n="usr_label_username">Nom d'utilisateur *</label>
               <input type="text" id="username" required>
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Email *</label>
+              <label data-i18n="usr_label_email">Email *</label>
               <input type="email" id="email" required>
             </div>
             <div class="form-group">
-              <label>Role</label>
+              <label data-i18n="usr_label_role">Role</label>
               <select id="role">
-                <option value="admin">Administrateur</option>
-                <option value="editor">Editeur</option>
+                <option value="admin" data-i18n="usr_role_admin">Administrateur</option>
+                <option value="editor" data-i18n="usr_role_editor">Editeur</option>
               </select>
             </div>
           </div>
           <div class="form-group">
-            <label id="password-label">Mot de passe *</label>
+            <label id="password-label" data-i18n="usr_label_password">Mot de passe *</label>
             <input type="password" id="password" minlength="6">
-            <div class="hint" id="password-hint">Minimum 6 caracteres</div>
+            <div class="hint" id="password-hint" data-i18n="usr_hint_min">Minimum 6 caracteres</div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeModal()">Annuler</button>
-        <button class="btn btn-primary" id="btn-save" onclick="saveUser()">Enregistrer</button>
+        <button class="btn btn-outline" onclick="closeModal()" data-i18n="cancel">Annuler</button>
+        <button class="btn btn-primary" id="btn-save" onclick="saveUser()" data-i18n="save">Enregistrer</button>
       </div>
     </div>
   </div>
 
   <div class="modal-overlay" id="delete-overlay">
     <div class="modal" style="max-width:400px">
-      <div class="modal-header"><h3>Confirmer la suppression</h3><button class="modal-close" onclick="closeDeleteModal()">&times;</button></div>
-      <div class="modal-body"><p>Voulez-vous vraiment supprimer cet utilisateur ?</p><p id="delete-name" style="font-weight:600;margin-top:8px"></p></div>
+      <div class="modal-header"><h3 data-i18n="usr_delete_title">Confirmer la suppression</h3><button class="modal-close" onclick="closeDeleteModal()">&times;</button></div>
+      <div class="modal-body"><p data-i18n="usr_delete_confirm">Voulez-vous vraiment supprimer cet utilisateur ?</p><p id="delete-name" style="font-weight:600;margin-top:8px"></p></div>
       <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeDeleteModal()">Annuler</button>
-        <button class="btn btn-danger" id="btn-confirm-delete" onclick="confirmDelete()">Supprimer</button>
+        <button class="btn btn-outline" onclick="closeDeleteModal()" data-i18n="cancel">Annuler</button>
+        <button class="btn btn-danger" id="btn-confirm-delete" onclick="confirmDelete()" data-i18n="delete">Supprimer</button>
       </div>
     </div>
   </div>
@@ -101,14 +103,14 @@
   <script>
     var deleteId = null;
 
-    if (!initAdminPage('users', 'Utilisateurs')) throw new Error('Auth required');
+    if (!initAdminPage('users', 'usr_title')) throw new Error('Auth required');
 
     loadUsers();
 
     function loadUsers() {
       AdminAPI.get('users').then(function(users) {
         var tbody = document.getElementById('users-table');
-        if (users.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="table-empty">Aucun utilisateur</td></tr>'; return; }
+        if (users.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="table-empty">' + I18n.t('usr_empty') + '</td></tr>'; return; }
         tbody.innerHTML = users.map(function(u) {
           var currentUser = AdminAuth.getUser();
           var isSelf = currentUser && currentUser.id === u.id;
@@ -116,23 +118,23 @@
             '<td>' + AdminUtils.escapeHtml(u.full_name) + '</td>' +
             '<td>' + AdminUtils.escapeHtml(u.username) + '</td>' +
             '<td>' + AdminUtils.escapeHtml(u.email) + '</td>' +
-            '<td>' + (u.role === 'admin' ? '<span style="color:var(--primary)">Admin</span>' : '<span style="color:var(--info)">Editeur</span>') + '</td>' +
+            '<td>' + (u.role === 'admin' ? '<span style="color:var(--primary)">' + I18n.t('usr_role_admin_short') + '</span>' : '<span style="color:var(--info)">' + I18n.t('usr_role_editor_short') + '</span>') + '</td>' +
             '<td>' + AdminUtils.formatDate(u.created_at) + '</td>' +
             '<td><div class="btn-group">' +
-            '<button class="btn-icon" title="Modifier" onclick="editUser(' + u.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
-            (isSelf ? '' : '<button class="btn-icon" title="Supprimer" onclick="deleteUser(' + u.id + ',\'' + AdminUtils.escapeHtml(u.full_name).replace(/'/g, "\\'") + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--danger)"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>') +
+            '<button class="btn-icon" title="' + I18n.t('usr_title_attr_edit') + '" onclick="editUser(' + u.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
+            (isSelf ? '' : '<button class="btn-icon" title="' + I18n.t('usr_title_attr_del') + '" onclick="deleteUser(' + u.id + ',\'' + AdminUtils.escapeHtml(u.full_name).replace(/'/g, "\\'") + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--danger)"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>') +
             '</div></td></tr>';
         }).join('');
-      }).catch(function() { AdminToast('Erreur de chargement', 'error'); });
+      }).catch(function() { AdminToast(I18n.t('usr_load_error'), 'error'); });
     }
 
     window.openModal = function() {
       document.getElementById('edit-id').value = '';
       document.getElementById('user-form').reset();
-      document.getElementById('modal-title').textContent = 'Nouvel utilisateur';
+      document.getElementById('modal-title').textContent = I18n.t('usr_modal_new');
       document.getElementById('password').required = true;
-      document.getElementById('password-label').textContent = 'Mot de passe *';
-      document.getElementById('password-hint').textContent = 'Minimum 6 caracteres';
+      document.getElementById('password-label').textContent = I18n.t('usr_label_password');
+      document.getElementById('password-hint').textContent = I18n.t('usr_hint_min');
       document.getElementById('form-alert').className = 'alert';
       document.getElementById('modal-overlay').classList.add('show');
     };
@@ -149,12 +151,12 @@
         document.getElementById('email').value = u.email;
         document.getElementById('role').value = u.role;
         document.getElementById('password').required = false;
-        document.getElementById('password-label').textContent = 'Mot de passe (laisser vide pour garder l\'actuel)';
-        document.getElementById('password-hint').textContent = 'Minimum 6 caracteres si modifie';
-        document.getElementById('modal-title').textContent = 'Modifier l\'utilisateur';
+        document.getElementById('password-label').textContent = I18n.t('usr_label_pw_edit');
+        document.getElementById('password-hint').textContent = I18n.t('usr_hint_min_edit');
+        document.getElementById('modal-title').textContent = I18n.t('usr_modal_edit');
         document.getElementById('form-alert').className = 'alert';
         document.getElementById('modal-overlay').classList.add('show');
-      }).catch(function() { AdminToast('Erreur de chargement', 'error'); });
+      }).catch(function() { AdminToast(I18n.t('usr_load_error'), 'error'); });
     };
 
     window.saveUser = function() {
@@ -169,15 +171,15 @@
       if (password) data.password = password;
 
       if (!data.full_name || !data.username || !data.email) {
-        AdminAlert('form-alert', 'Veuillez remplir tous les champs obligatoires', 'danger');
+        AdminAlert('form-alert', I18n.t('usr_fill_required'), 'danger');
         return;
       }
       if (!id && !password) {
-        AdminAlert('form-alert', 'Le mot de passe est requis pour un nouvel utilisateur', 'danger');
+        AdminAlert('form-alert', I18n.t('usr_pw_required_new'), 'danger');
         return;
       }
       if (password && password.length < 6) {
-        AdminAlert('form-alert', 'Le mot de passe doit contenir au moins 6 caracteres', 'danger');
+        AdminAlert('form-alert', I18n.t('usr_pw_too_short'), 'danger');
         return;
       }
 
@@ -185,11 +187,11 @@
       btn.disabled = true;
       var promise = id ? AdminAPI.put('users/' + id, data) : AdminAPI.post('users', data);
       promise.then(function() {
-        AdminToast(id ? 'Utilisateur modifie' : 'Utilisateur cree', 'success');
+        AdminToast(id ? I18n.t('usr_updated') : I18n.t('usr_created'), 'success');
         closeModal();
         loadUsers();
       }).catch(function(err) {
-        AdminAlert('form-alert', err.error || 'Erreur lors de l\'enregistrement', 'danger');
+        AdminAlert('form-alert', err.error || I18n.t('usr_save_error'), 'danger');
       }).finally(function() { btn.disabled = false; });
     };
 
@@ -202,10 +204,10 @@
     window.confirmDelete = function() {
       if (!deleteId) return;
       AdminAPI.del('users/' + deleteId).then(function() {
-        AdminToast('Utilisateur supprime', 'success');
+        AdminToast(I18n.t('usr_deleted'), 'success');
         closeDeleteModal();
         loadUsers();
-      }).catch(function(err) { AdminToast(err.error || 'Erreur de suppression', 'error'); });
+      }).catch(function(err) { AdminToast(err.error || I18n.t('usr_delete_error'), 'error'); });
     };
   </script>
 </body>

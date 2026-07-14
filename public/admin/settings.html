@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Parametres - Administration</title>
+  <title data-i18n="set_title">Parametres - Administration</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Tajawal:wght@200;300;400;500;700;800;900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css">
+  <script src="js/translations.js"></script>
+  <script src="js/i18n.js"></script>
 </head>
-<body>
+<body data-i18n-page="set_title">
   <div class="admin-wrapper">
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <aside class="sidebar" id="sidebar"></aside>
@@ -18,70 +20,83 @@
       <header class="topbar" id="topbar"></header>
       <div class="content">
         <div class="page-header">
-          <h2>Parametres</h2>
-          <p>Configuration du tableau de bord</p>
+          <h2 data-i18n="set_heading">Parametres</h2>
+          <p data-i18n="set_subtitle">Configuration du tableau de bord</p>
         </div>
         <div class="dashboard-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
           <div class="card">
-            <div class="card-header"><h3>Informations du site</h3></div>
+            <div class="card-header"><h3 data-i18n="set_site_info">Informations du site</h3></div>
             <div class="card-body">
               <div class="alert" id="settings-alert"></div>
               <form id="settings-form">
                 <div class="form-group">
-                  <label>Nom de la commune</label>
+                  <label data-i18n="set_label_name">Nom de la commune</label>
                   <input type="text" id="site_name">
                 </div>
                 <div class="form-group">
-                  <label>Description</label>
+                  <label data-i18n="set_label_desc">Description</label>
                   <textarea id="site_description" rows="3"></textarea>
                 </div>
                 <div class="form-group">
-                  <label>Email de contact</label>
+                  <label data-i18n="set_label_email">Email de contact</label>
                   <input type="email" id="site_email">
                 </div>
                 <div class="form-group">
-                  <label>Telephone</label>
+                  <label data-i18n="set_label_phone">Telephone</label>
                   <input type="text" id="site_phone">
                 </div>
                 <div class="form-group">
-                  <label>Adresse</label>
+                  <label data-i18n="set_label_address">Adresse</label>
                   <input type="text" id="site_address">
                 </div>
                 <div class="form-actions">
-                  <button type="submit" class="btn btn-primary">Enregistrer</button>
+                  <button type="submit" class="btn btn-primary" data-i18n="save">Enregistrer</button>
                 </div>
               </form>
             </div>
           </div>
           <div>
             <div class="card" style="margin-bottom:20px">
-              <div class="card-header"><h3>Statistiques du systeme</h3></div>
+              <div class="card-header"><h3 data-i18n="set_stats_title">Statistiques du systeme</h3></div>
               <div class="card-body">
                 <div style="display:grid;gap:12px">
                   <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
-                    <span>Actualites publiees</span><strong id="sys-news">-</strong>
+                    <span data-i18n="set_stat_news">Actualites publiees</span><strong id="sys-news">-</strong>
                   </div>
                   <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
-                    <span>Services enregistres</span><strong id="sys-services">-</strong>
+                    <span data-i18n="set_stat_services">Services enregistres</span><strong id="sys-services">-</strong>
                   </div>
                   <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
-                    <span>Messages recus</span><strong id="sys-messages">-</strong>
+                    <span data-i18n="set_stat_messages">Messages recus</span><strong id="sys-messages">-</strong>
                   </div>
                   <div style="display:flex;justify-content:space-between;padding:10px 0">
-                    <span>Messages non lus</span><strong id="sys-unread">-</strong>
+                    <span data-i18n="set_stat_unread">Messages non lus</span><strong id="sys-unread">-</strong>
                   </div>
                 </div>
               </div>
             </div>
             <div class="card">
-              <div class="card-header"><h3>Actions rapides</h3></div>
+              <div class="card-header"><h3 data-i18n="set_quick_actions">Actions rapides</h3></div>
               <div class="card-body">
                 <div style="display:flex;flex-direction:column;gap:10px">
-                  <a href="actualites.html" class="btn btn-outline" style="justify-content:center">Gerer les actualites</a>
-                  <a href="services.html" class="btn btn-outline" style="justify-content:center">Gerer les services</a>
-                  <a href="messages.html" class="btn btn-outline" style="justify-content:center">Voir les messages</a>
-                  <a href="users.html" class="btn btn-outline" style="justify-content:center">Gerer les utilisateurs</a>
-                  <a href="/" class="btn btn-outline" style="justify-content:center" target="_blank">Voir le site public</a>
+                  <a href="actualites.html" class="btn btn-outline" style="justify-content:center" data-i18n="set_manage_news">Gerer les actualites</a>
+                  <a href="services.html" class="btn btn-outline" style="justify-content:center" data-i18n="set_manage_services">Gerer les services</a>
+                  <a href="messages.html" class="btn btn-outline" style="justify-content:center" data-i18n="set_view_messages">Voir les messages</a>
+                  <a href="users.html" class="btn btn-outline" style="justify-content:center" data-i18n="set_manage_users">Gerer les utilisateurs</a>
+                  <a href="/" class="btn btn-outline" style="justify-content:center" target="_blank" data-i18n="set_view_site">Voir le site public</a>
+                </div>
+              </div>
+            </div>
+            <div class="card" style="margin-top:20px">
+              <div class="card-header"><h3 data-i18n="lang_section">Langue / اللغة</h3></div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label data-i18n="lang_label">Langue de l'interface</label>
+                  <div style="display:flex;gap:10px;margin-top:8px">
+                    <button class="btn btn-sm" id="lang-fr" onclick="switchLang('fr')" data-i18n="lang_fr">Francais</button>
+                    <button class="btn btn-sm" id="lang-ar" onclick="switchLang('ar')" data-i18n="lang_ar">العربية</button>
+                  </div>
+                  <p class="hint" style="margin-top:10px" data-i18n-hint="lang_hint">La langue change instantanement</p>
                 </div>
               </div>
             </div>
@@ -92,7 +107,7 @@
   </div>
   <script src="js/admin.js"></script>
   <script>
-    if (!initAdminPage('settings', 'Parametres')) throw new Error('Auth required');
+    if (!initAdminPage('settings', 'set_heading')) throw new Error('Auth required');
 
     loadSettings();
     loadStats();
@@ -104,18 +119,20 @@
         if (data.site_email) document.getElementById('site_email').value = data.site_email;
         if (data.site_phone) document.getElementById('site_phone').value = data.site_phone;
         if (data.site_address) document.getElementById('site_address').value = data.site_address;
+        updateLangButtons();
       }).catch(function() {
-        document.getElementById('site_name').value = 'Commune de Tarmigt';
-        document.getElementById('site_description').value = 'Site officiel de la Commune de Tarmigt';
+        document.getElementById('site_name').value = I18n.t('set_fallback_name');
+        document.getElementById('site_description').value = I18n.t('set_fallback_desc');
         document.getElementById('site_email').value = 'contact@tarmigt.ma';
         document.getElementById('site_phone').value = '05458585525';
-        document.getElementById('site_address').value = 'Siege de la commune, Tarmigt, Ouarzazate';
+        document.getElementById('site_address').value = I18n.t('set_fallback_addr');
+        updateLangButtons();
       });
     }
 
     function loadStats() {
       AdminAPI.get('stats').then(function(d) {
-        document.getElementById('sys-news').textContent = d.actualites.total + ' total (' + d.actualites.published + ' publiees)';
+        document.getElementById('sys-news').textContent = d.actualites.total + ' ' + I18n.t('total') + ' (' + d.actualites.published + ' ' + I18n.t('published') + ')';
         document.getElementById('sys-services').textContent = d.services.total;
         document.getElementById('sys-messages').textContent = d.contacts.total;
         document.getElementById('sys-unread').textContent = d.contacts.unread;
@@ -131,14 +148,32 @@
         site_phone: document.getElementById('site_phone').value.trim(),
         site_address: document.getElementById('site_address').value.trim()
       };
-      if (!data.site_name) { AdminAlert('settings-alert', 'Le nom de la commune est requis', 'danger'); return; }
+      if (!data.site_name) { AdminAlert('settings-alert', I18n.t('set_name_required'), 'danger'); return; }
       AdminAPI.put('settings', data).then(function() {
-        AdminToast('Parametres enregistres', 'success');
-        AdminAlert('settings-alert', 'Parametres sauvegardes avec succes', 'success');
+        AdminToast(I18n.t('set_saved'), 'success');
+        AdminAlert('settings-alert', I18n.t('set_saved_ok'), 'success');
       }).catch(function(err) {
-        AdminAlert('settings-alert', err.error || 'Erreur lors de la sauvegarde', 'danger');
+        AdminAlert('settings-alert', err.error || I18n.t('set_save_error'), 'danger');
       });
     });
+
+    window.switchLang = function(lang) {
+      I18n.setLang(lang);
+      updateLangButtons();
+      AdminToast(I18n.t('lang_switched'), 'success');
+    };
+
+    function updateLangButtons() {
+      var cur = I18n.getLang();
+      var frBtn = document.getElementById('lang-fr');
+      var arBtn = document.getElementById('lang-ar');
+      if (frBtn) {
+        frBtn.className = cur === 'fr' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline';
+      }
+      if (arBtn) {
+        arBtn.className = cur === 'ar' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline';
+      }
+    }
   </script>
 </body>
 </html>

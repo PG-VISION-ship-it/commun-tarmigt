@@ -100,6 +100,7 @@ a:hover{color:var(--terracotta);text-decoration:none}
 .stat-icon.blue{background:linear-gradient(135deg,#1a5c6b,#248a9e)}
 .stat-icon.orange{background:linear-gradient(135deg,var(--terracotta),#d96a4e)}
 .stat-icon.purple{background:linear-gradient(135deg,#5a3d6b,#7b5294)}
+.stat-icon.teal{background:linear-gradient(135deg,#1a5c6b,#248a9e)}
 .stat-info h3{font-family:var(--font-display);font-size:1.6rem;font-weight:700;line-height:1.2;color:var(--green-deep)}
 .stat-info p{font-size:.85rem;color:var(--ink-soft)}
 
@@ -215,6 +216,18 @@ tbody tr:last-child td{border-bottom:none}
 /* ── FOCUS VISIBILITY ───────────────────────────────────────── */
 a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
+/* ── KPI GRID ───────────────────────────────────────────────── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px}
+
+/* ── CHARTS GRID ────────────────────────────────────────────── */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.chart-card{min-height:0}
+.chart-full{grid-column:1/-1}
+.chart-body{position:relative;min-height:280px;padding:20px 24px 24px}
+.chart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;color:var(--ink-soft);font-size:.95rem;text-align:center}
+.chart-empty p{margin:0}
+.chart-empty-hint{font-size:.8rem;color:var(--ink-soft);opacity:.6;margin-top:6px}
+
 /* ── RESPONSIVE ─────────────────────────────────────────────── */
 @media(max-width:1024px){
   .form-row{grid-template-columns:1fr}
@@ -236,9 +249,12 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
   .card-header{flex-direction:column;align-items:flex-start}
   .profile-card{flex-direction:column;text-align:center}
   .dashboard-grid{grid-template-columns:1fr !important}
+  .charts-grid{grid-template-columns:1fr}
+  .kpi-grid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:480px){
   .stats-grid{grid-template-columns:1fr}
+  .kpi-grid{grid-template-columns:1fr}
   .stat-card{padding:18px}
   .btn-group{flex-direction:column}
   .btn-group .btn{width:100%;justify-content:center}
@@ -252,4 +268,39 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 
 @media(prefers-reduced-motion:reduce){
   *{transition:none !important;animation:none !important}
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   RTL SUPPORT — Arabic language mode
+   All directional properties are mirrored automatically.
+   ══════════════════════════════════════════════════════════════════════════════ */
+.rtl{direction:rtl;text-align:right}
+.rtl .sidebar{left:auto;right:0}
+.rtl .main-content{margin-left:0;margin-right:var(--sidebar-w)}
+.rtl .sidebar-nav a{border-left:none;border-right:3px solid transparent}
+.rtl .sidebar-nav a.active{border-left:none;border-right-color:var(--gold)}
+.rtl .topbar-right{margin-left:0}
+.rtl .topbar-left h1{text-align:right}
+.rtl .card-header{flex-direction:row-reverse}
+.rtl .toolbar{flex-direction:row-reverse}
+.rtl .search-box{margin-left:0}
+.rtl .form-actions{flex-direction:row-reverse}
+.rtl .pagination{flex-direction:row-reverse}
+.rtl .modal-header{flex-direction:row-reverse}
+.rtl .modal-footer{justify-content:flex-start}
+.rtl .message-detail .meta{direction:rtl}
+.rtl .profile-card{flex-direction:row-reverse;text-align:right}
+.rtl .stat-card{flex-direction:row-reverse}
+.rtl table{direction:rtl}
+.rtl thead th{text-align:right}
+.rtl .toast-container{right:auto;left:20px}
+.rtl .toast{flex-direction:row-reverse}
+.rtl .page-header{text-align:right}
+.rtl .chart-card .card-header{flex-direction:row-reverse}
+.rtl .chart-body{direction:rtl}
+
+@media(max-width:768px){
+  .rtl .main-content{margin-right:0}
+  .rtl .sidebar{transform:translateX(100%)}
+  .rtl .sidebar.open{transform:translateX(0)}
 }

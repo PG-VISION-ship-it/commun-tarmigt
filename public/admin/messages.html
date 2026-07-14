@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Messages - Administration</title>
+  <title data-i18n="msg_title">Messages - Administration</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Tajawal:wght@200;300;400;500;700;800;900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css">
+  <script src="js/translations.js"></script>
+  <script src="js/i18n.js"></script>
 </head>
-<body>
+<body data-i18n-page="msg_title">
   <div class="admin-wrapper">
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <aside class="sidebar" id="sidebar"></aside>
@@ -18,21 +20,21 @@
       <header class="topbar" id="topbar"></header>
       <div class="content">
         <div class="page-header">
-          <h2>Gestion des messages</h2>
-          <p>Consulter les messages de contact</p>
+          <h2 data-i18n="msg_heading">Gestion des messages</h2>
+          <p data-i18n="msg_subtitle">Consulter les messages de contact</p>
         </div>
         <div class="toolbar">
           <div class="filter-group">
-            <button class="btn btn-sm active" id="filter-all" onclick="setFilter('all')">Tous</button>
-            <button class="btn btn-outline btn-sm" id="filter-unread" onclick="setFilter('unread')">Non lus</button>
+            <button class="btn btn-sm active" id="filter-all" onclick="setFilter('all')" data-i18n="msg_filter_all">Tous</button>
+            <button class="btn btn-outline btn-sm" id="filter-unread" onclick="setFilter('unread')" data-i18n="msg_filter_unread">Non lus</button>
           </div>
-          <button class="btn btn-danger btn-sm" id="btn-delete-all" onclick="deleteAllRead()" style="display:none">Supprimer les lus</button>
+          <button class="btn btn-danger btn-sm" id="btn-delete-all" onclick="deleteAllRead()" style="display:none" data-i18n="msg_delete_read_btn">Supprimer les lus</button>
         </div>
         <div class="card">
           <div class="card-body">
             <div class="table-responsive">
               <table>
-                <thead><tr><th>Nom</th><th>Email</th><th>Sujet</th><th>Date</th><th>Etat</th><th>Actions</th></tr></thead>
+                <thead><tr><th data-i18n="msg_th_name">Nom</th><th data-i18n="msg_th_email">Email</th><th data-i18n="msg_th_subject">Sujet</th><th data-i18n="msg_th_date">Date</th><th data-i18n="msg_th_status">Etat</th><th data-i18n="msg_th_actions">Actions</th></tr></thead>
                 <tbody id="messages-table"><tr><td colspan="6" class="loading"><div class="spinner"></div></td></tr></tbody>
               </table>
             </div>
@@ -46,34 +48,34 @@
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <div class="modal-header">
-        <h3 id="modal-title">Message</h3>
+        <h3 id="modal-title" data-i18n="msg_modal_title">Message</h3>
         <button class="modal-close" onclick="closeModal()">&times;</button>
       </div>
       <div class="modal-body">
         <div class="message-detail">
           <dl class="meta">
-            <dt>De :</dt><dd id="msg-name"></dd>
-            <dt>Email :</dt><dd id="msg-email"></dd>
-            <dt>Telephone :</dt><dd id="msg-phone"></dd>
-            <dt>Sujet :</dt><dd id="msg-subject"></dd>
-            <dt>Date :</dt><dd id="msg-date"></dd>
+            <dt data-i18n="msg_detail_from">De :</dt><dd id="msg-name"></dd>
+            <dt data-i18n="msg_detail_email">Email :</dt><dd id="msg-email"></dd>
+            <dt data-i18n="msg_detail_phone">Telephone :</dt><dd id="msg-phone"></dd>
+            <dt data-i18n="msg_detail_subject">Sujet :</dt><dd id="msg-subject"></dd>
+            <dt data-i18n="msg_detail_date">Date :</dt><dd id="msg-date"></dd>
           </dl>
           <div class="body" id="msg-body"></div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeModal()">Fermer</button>
+        <button class="btn btn-outline" onclick="closeModal()" data-i18n="close">Fermer</button>
       </div>
     </div>
   </div>
 
   <div class="modal-overlay" id="delete-overlay">
     <div class="modal" style="max-width:400px">
-      <div class="modal-header"><h3>Confirmer la suppression</h3><button class="modal-close" onclick="closeDeleteModal()">&times;</button></div>
-      <div class="modal-body"><p>Voulez-vous vraiment supprimer ce message ?</p></div>
+      <div class="modal-header"><h3 data-i18n="msg_delete_title">Confirmer la suppression</h3><button class="modal-close" onclick="closeDeleteModal()">&times;</button></div>
+      <div class="modal-body"><p data-i18n="msg_delete_confirm">Voulez-vous vraiment supprimer ce message ?</p></div>
       <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeDeleteModal()">Annuler</button>
-        <button class="btn btn-danger" onclick="confirmDelete()">Supprimer</button>
+        <button class="btn btn-outline" onclick="closeDeleteModal()" data-i18n="cancel">Annuler</button>
+        <button class="btn btn-danger" onclick="confirmDelete()" data-i18n="delete">Supprimer</button>
       </div>
     </div>
   </div>
@@ -85,7 +87,7 @@
     var currentFilter = 'all';
     var deleteId = null;
 
-    if (!initAdminPage('messages', 'Messages')) throw new Error('Auth required');
+    if (!initAdminPage('messages', 'msg_title')) throw new Error('Auth required');
 
     loadMessages();
 
@@ -96,17 +98,17 @@
       if (currentFilter === 'unread') url += '&unread=1';
       AdminAPI.get(url).then(function(d) {
         var tbody = document.getElementById('messages-table');
-        if (d.data.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="table-empty">Aucun message</td></tr>'; document.getElementById('pagination').innerHTML = ''; return; }
+        if (d.data.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="table-empty">' + I18n.t('msg_empty') + '</td></tr>'; document.getElementById('pagination').innerHTML = ''; return; }
         tbody.innerHTML = d.data.map(function(m) {
           return '<tr style="' + (!m.is_read ? 'font-weight:600;background:#f8fffe' : '') + '">' +
             '<td>' + AdminUtils.escapeHtml(AdminUtils.truncate(m.name, 25)) + '</td>' +
             '<td>' + AdminUtils.escapeHtml(m.email) + '</td>' +
             '<td>' + AdminUtils.escapeHtml(AdminUtils.truncate(m.subject, 30)) + '</td>' +
             '<td>' + AdminUtils.formatDate(m.created_at) + '</td>' +
-            '<td>' + (m.is_read ? '<span style="color:var(--text-light)">Lu</span>' : '<span style="color:var(--danger)">Non lu</span>') + '</td>' +
+            '<td>' + (m.is_read ? '<span style="color:var(--text-light)">' + I18n.t('msg_read') + '</span>' : '<span style="color:var(--danger)">' + I18n.t('msg_unread') + '</span>') + '</td>' +
             '<td><div class="btn-group">' +
-            '<button class="btn-icon" title="Voir" onclick="viewMessage(' + m.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>' +
-            '<button class="btn-icon" title="Supprimer" onclick="deleteMessage(' + m.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--danger)"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>' +
+            '<button class="btn-icon" title="' + I18n.t('msg_title_attr_view') + '" onclick="viewMessage(' + m.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>' +
+            '<button class="btn-icon" title="' + I18n.t('msg_title_attr_del') + '" onclick="deleteMessage(' + m.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--danger)"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>' +
             '</div></td></tr>';
         }).join('');
         totalPages = Math.ceil(d.total / limit);
@@ -115,16 +117,16 @@
         document.getElementById('btn-delete-all').style.display = hasRead ? 'inline-flex' : 'none';
       }).catch(function() {
         var tbody = document.getElementById('messages-table');
-        tbody.innerHTML = '<tr><td colspan="6" class="table-empty">Erreur de chargement. Verifiez que le serveur est demarre.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="table-empty">' + I18n.t('msg_load_error') + '</td></tr>';
         document.getElementById('pagination').innerHTML = '';
-        AdminToast('Erreur de chargement', 'error');
+        AdminToast(I18n.t('msg_toast_load_error'), 'error');
       });
     }
 
     function renderPagination() {
-      var html = '<button ' + (currentPage <= 1 ? 'disabled' : '') + ' onclick="goPage(' + (currentPage - 1) + ')">Precedent</button>';
-      html += '<span class="page-info">Page ' + currentPage + ' / ' + totalPages + '</span>';
-      html += '<button ' + (currentPage >= totalPages ? 'disabled' : '') + ' onclick="goPage(' + (currentPage + 1) + ')">Suivant</button>';
+      var html = '<button ' + (currentPage <= 1 ? 'disabled' : '') + ' onclick="goPage(' + (currentPage - 1) + ')">' + I18n.t('previous') + '</button>';
+      html += '<span class="page-info">' + I18n.t('page') + ' ' + currentPage + ' ' + I18n.t('of') + ' ' + totalPages + '</span>';
+      html += '<button ' + (currentPage >= totalPages ? 'disabled' : '') + ' onclick="goPage(' + (currentPage + 1) + ')">' + I18n.t('next') + '</button>';
       document.getElementById('pagination').innerHTML = html;
     }
     window.goPage = function(p) { currentPage = p; loadMessages(); };
@@ -139,16 +141,16 @@
 
     window.viewMessage = function(id) {
       AdminAPI.get('messages/' + id).then(function(m) {
-        document.getElementById('modal-title').textContent = 'Message de ' + m.name;
+        document.getElementById('modal-title').textContent = I18n.t('msg_of') + m.name;
         document.getElementById('msg-name').textContent = m.name;
         document.getElementById('msg-email').textContent = m.email;
-        document.getElementById('msg-phone').textContent = m.phone || 'Non renseigne';
+        document.getElementById('msg-phone').textContent = m.phone || I18n.t('msg_not_provided');
         document.getElementById('msg-subject').textContent = m.subject;
         document.getElementById('msg-date').textContent = AdminUtils.formatDate(m.created_at);
         document.getElementById('msg-body').textContent = m.message;
         document.getElementById('modal-overlay').classList.add('show');
         loadMessages();
-      }).catch(function() { AdminToast('Erreur de chargement', 'error'); });
+      }).catch(function() { AdminToast(I18n.t('msg_toast_load_error'), 'error'); });
     };
 
     window.closeModal = function() { document.getElementById('modal-overlay').classList.remove('show'); };
@@ -161,18 +163,18 @@
     window.confirmDelete = function() {
       if (!deleteId) return;
       AdminAPI.del('messages/' + deleteId).then(function() {
-        AdminToast('Message supprime', 'success');
+        AdminToast(I18n.t('msg_deleted'), 'success');
         closeDeleteModal();
         loadMessages();
-      }).catch(function() { AdminToast('Erreur de suppression', 'error'); });
+      }).catch(function() { AdminToast(I18n.t('msg_delete_error'), 'error'); });
     };
 
     window.deleteAllRead = function() {
-      if (!confirm('Supprimer tous les messages lus ?')) return;
+      if (!confirm(I18n.t('msg_delete_read_confirm'))) return;
       AdminAPI.del('messages/batch/delete-read').then(function(result) {
-        AdminToast(result.deleted + ' message(s) supprime(s)', 'success');
+        AdminToast(result.deleted + I18n.t('msg_deleted_count'), 'success');
         loadMessages();
-      }).catch(function() { AdminToast('Erreur', 'error'); });
+      }).catch(function() { AdminToast(I18n.t('msg_error'), 'error'); });
     };
   </script>
 </body>

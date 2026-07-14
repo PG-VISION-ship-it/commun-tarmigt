@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Services - Administration</title>
+  <title data-i18n="svc_title">Services - Administration</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Tajawal:wght@200;300;400;500;700;800;900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css">
+  <script src="js/translations.js"></script>
+  <script src="js/i18n.js"></script>
 </head>
-<body>
+<body data-i18n-page="svc_title">
   <div class="admin-wrapper">
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <aside class="sidebar" id="sidebar"></aside>
@@ -18,21 +20,21 @@
       <header class="topbar" id="topbar"></header>
       <div class="content">
         <div class="page-header">
-          <h2>Gestion des services</h2>
-          <p>Creer, modifier et supprimer des services communaux</p>
+          <h2 data-i18n="svc_heading">Gestion des services</h2>
+          <p data-i18n="svc_subtitle">Creer, modifier et supprimer des services communaux</p>
         </div>
         <div class="toolbar">
           <div class="search-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="search-input" placeholder="Rechercher un service...">
+            <input type="text" id="search-input" data-i18n-ph="svc_search_ph" placeholder="Rechercher un service...">
           </div>
-          <button class="btn btn-primary" onclick="openModal()">+ Nouveau service</button>
+          <button class="btn btn-primary" data-i18n="svc_new_btn" onclick="openModal()">+ Nouveau service</button>
         </div>
         <div class="card">
           <div class="card-body">
             <div class="table-responsive">
               <table>
-                <thead><tr><th>Nom (FR)</th><th>Nom (AR)</th><th>Categorie</th><th>Delai</th><th>Cout</th><th>Ordre</th><th>Actions</th></tr></thead>
+                <thead><tr><th data-i18n="svc_th_name_fr">Nom (FR)</th><th data-i18n="svc_th_name_ar">Nom (AR)</th><th data-i18n="svc_th_category">Categorie</th><th data-i18n="svc_th_delay">Delai</th><th data-i18n="svc_th_cost">Cout</th><th data-i18n="svc_th_order">Ordre</th><th data-i18n="svc_th_actions">Actions</th></tr></thead>
                 <tbody id="services-table"><tr><td colspan="7" class="loading"><div class="spinner"></div></td></tr></tbody>
               </table>
             </div>
@@ -55,70 +57,70 @@
           <input type="hidden" id="edit-id">
           <div class="form-row">
             <div class="form-group">
-              <label>Nom (Francais) *</label>
+              <label data-i18n="svc_label_name_fr">Nom (Francais) *</label>
               <input type="text" id="nom_fr" required>
             </div>
             <div class="form-group">
-              <label>Nom (Arabe) *</label>
+              <label data-i18n="svc_label_name_ar">Nom (Arabe) *</label>
               <input type="text" id="nom_ar" dir="rtl" required>
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Description (Francais) *</label>
+              <label data-i18n="svc_label_desc_fr">Description (Francais) *</label>
               <textarea id="description_fr" rows="3" required></textarea>
             </div>
             <div class="form-group">
-              <label>Description (Arabe) *</label>
+              <label data-i18n="svc_label_desc_ar">Description (Arabe) *</label>
               <textarea id="description_ar" rows="3" dir="rtl" required></textarea>
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Documents requis (FR)</label>
+              <label data-i18n="svc_label_docs_fr">Documents requis (FR)</label>
               <textarea id="documents_requis_fr" rows="2"></textarea>
             </div>
             <div class="form-group">
-              <label>Documents requis (AR)</label>
+              <label data-i18n="svc_label_docs_ar">Documents requis (AR)</label>
               <textarea id="documents_requis_ar" rows="2" dir="rtl"></textarea>
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Categorie</label>
-              <input type="text" id="categorie" placeholder="Ex: Etat civil, Urbanisme...">
+              <label data-i18n="svc_label_category">Categorie</label>
+              <input type="text" id="categorie" data-i18n-ph="svc_ph_category" placeholder="Ex: Etat civil, Urbanisme...">
             </div>
             <div class="form-group">
-              <label>Delai de traitement</label>
-              <input type="text" id="delai" placeholder="Ex: 3 jours">
+              <label data-i18n="svc_label_delay">Delai de traitement</label>
+              <input type="text" id="delai" data-i18n-ph="svc_ph_delay" placeholder="Ex: 3 jours">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Cout</label>
-              <input type="text" id="cout" placeholder="Ex: Gratuit, 50 DH...">
+              <label data-i18n="svc_label_cost">Cout</label>
+              <input type="text" id="cout" data-i18n-ph="svc_ph_cost" placeholder="Ex: Gratuit, 50 DH...">
             </div>
             <div class="form-group">
-              <label>Ordre d'affichage</label>
+              <label data-i18n="svc_label_order">Ordre d'affichage</label>
               <input type="number" id="ordre_affichage" value="0" min="0">
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeModal()">Annuler</button>
-        <button class="btn btn-primary" id="btn-save" onclick="saveService()">Enregistrer</button>
+        <button class="btn btn-outline" onclick="closeModal()" data-i18n="cancel">Annuler</button>
+        <button class="btn btn-primary" id="btn-save" onclick="saveService()" data-i18n="save">Enregistrer</button>
       </div>
     </div>
   </div>
 
   <div class="modal-overlay" id="delete-overlay">
     <div class="modal" style="max-width:400px">
-      <div class="modal-header"><h3>Confirmer la suppression</h3><button class="modal-close" onclick="closeDeleteModal()">&times;</button></div>
-      <div class="modal-body"><p>Voulez-vous vraiment supprimer ce service ?</p><p id="delete-name" style="font-weight:600;margin-top:8px"></p></div>
+      <div class="modal-header"><h3 data-i18n="svc_delete_title">Confirmer la suppression</h3><button class="modal-close" onclick="closeDeleteModal()">&times;</button></div>
+      <div class="modal-body"><p data-i18n="svc_delete_confirm">Voulez-vous vraiment supprimer ce service ?</p><p id="delete-name" style="font-weight:600;margin-top:8px"></p></div>
       <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeDeleteModal()">Annuler</button>
-        <button class="btn btn-danger" id="btn-confirm-delete" onclick="confirmDelete()">Supprimer</button>
+        <button class="btn btn-outline" onclick="closeDeleteModal()" data-i18n="cancel">Annuler</button>
+        <button class="btn btn-danger" id="btn-confirm-delete" onclick="confirmDelete()" data-i18n="delete">Supprimer</button>
       </div>
     </div>
   </div>
@@ -129,7 +131,7 @@
     var totalPages = 1;
     var deleteId = null;
 
-    if (!initAdminPage('services', 'Services')) throw new Error('Auth required');
+    if (!initAdminPage('services', 'svc_title')) throw new Error('Auth required');
 
     loadServices();
     document.getElementById('search-input').addEventListener('input', debounce(function() { currentPage = 1; loadServices(); }, 300));
@@ -142,7 +144,7 @@
       var offset = (currentPage - 1) * limit;
       AdminAPI.get('services?limit=' + limit + '&offset=' + offset + '&search=' + encodeURIComponent(search)).then(function(d) {
         var tbody = document.getElementById('services-table');
-        if (d.data.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="table-empty">Aucun service trouve</td></tr>'; document.getElementById('pagination').innerHTML = ''; return; }
+        if (d.data.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="table-empty">' + I18n.t('svc_empty') + '</td></tr>'; document.getElementById('pagination').innerHTML = ''; return; }
         tbody.innerHTML = d.data.map(function(s) {
           return '<tr>' +
             '<td>' + AdminUtils.escapeHtml(AdminUtils.truncate(s.nom_fr, 30)) + '</td>' +
@@ -152,24 +154,24 @@
             '<td>' + AdminUtils.escapeHtml(s.cout || '-') + '</td>' +
             '<td>' + s.ordre_affichage + '</td>' +
             '<td><div class="btn-group">' +
-            '<button class="btn-icon" title="Modifier" onclick="editService(' + s.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
-            '<button class="btn-icon" title="Supprimer" onclick="deleteService(' + s.id + ',\'' + AdminUtils.escapeHtml(s.nom_fr).replace(/'/g, "\\'") + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--danger)"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>' +
+            '<button class="btn-icon" title="' + I18n.t('svc_title_attr_edit') + '" onclick="editService(' + s.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
+            '<button class="btn-icon" title="' + I18n.t('svc_title_attr_del') + '" onclick="deleteService(' + s.id + ',\'' + AdminUtils.escapeHtml(s.nom_fr).replace(/'/g, "\\'") + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--danger)"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>' +
             '</div></td></tr>';
         }).join('');
         totalPages = Math.ceil(d.total / limit);
         renderPagination();
       }).catch(function() {
         var tbody = document.getElementById('services-table');
-        tbody.innerHTML = '<tr><td colspan="7" class="table-empty">Erreur de chargement. Verifiez que le serveur est demarre.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="table-empty">' + I18n.t('svc_load_error') + '</td></tr>';
         document.getElementById('pagination').innerHTML = '';
-        AdminToast('Erreur de chargement', 'error');
+        AdminToast(I18n.t('svc_toast_load_error'), 'error');
       });
     }
 
     function renderPagination() {
-      var html = '<button ' + (currentPage <= 1 ? 'disabled' : '') + ' onclick="goPage(' + (currentPage - 1) + ')">Precedent</button>';
-      html += '<span class="page-info">Page ' + currentPage + ' / ' + totalPages + '</span>';
-      html += '<button ' + (currentPage >= totalPages ? 'disabled' : '') + ' onclick="goPage(' + (currentPage + 1) + ')">Suivant</button>';
+      var html = '<button ' + (currentPage <= 1 ? 'disabled' : '') + ' onclick="goPage(' + (currentPage - 1) + ')">' + I18n.t('previous') + '</button>';
+      html += '<span class="page-info">' + I18n.t('page') + ' ' + currentPage + ' ' + I18n.t('of') + ' ' + totalPages + '</span>';
+      html += '<button ' + (currentPage >= totalPages ? 'disabled' : '') + ' onclick="goPage(' + (currentPage + 1) + ')">' + I18n.t('next') + '</button>';
       document.getElementById('pagination').innerHTML = html;
     }
     window.goPage = function(p) { currentPage = p; loadServices(); };
@@ -178,7 +180,7 @@
       document.getElementById('edit-id').value = '';
       document.getElementById('service-form').reset();
       document.getElementById('ordre_affichage').value = '0';
-      document.getElementById('modal-title').textContent = 'Nouveau service';
+      document.getElementById('modal-title').textContent = I18n.t('svc_modal_new');
       document.getElementById('form-alert').className = 'alert';
       document.getElementById('modal-overlay').classList.add('show');
     };
@@ -198,10 +200,10 @@
         document.getElementById('cout').value = s.cout || '';
         document.getElementById('categorie').value = s.categorie || '';
         document.getElementById('ordre_affichage').value = s.ordre_affichage || 0;
-        document.getElementById('modal-title').textContent = 'Modifier le service';
+        document.getElementById('modal-title').textContent = I18n.t('svc_modal_edit');
         document.getElementById('form-alert').className = 'alert';
         document.getElementById('modal-overlay').classList.add('show');
-      }).catch(function() { AdminToast('Erreur de chargement', 'error'); });
+      }).catch(function() { AdminToast(I18n.t('svc_toast_load_error'), 'error'); });
     };
 
     window.saveService = function() {
@@ -219,18 +221,18 @@
         ordre_affichage: parseInt(document.getElementById('ordre_affichage').value) || 0
       };
       if (!data.nom_fr || !data.nom_ar || !data.description_fr || !data.description_ar) {
-        AdminAlert('form-alert', 'Veuillez remplir tous les champs obligatoires', 'danger');
+        AdminAlert('form-alert', I18n.t('svc_fill_required'), 'danger');
         return;
       }
       var btn = document.getElementById('btn-save');
       btn.disabled = true;
       var promise = id ? AdminAPI.put('services/' + id, data) : AdminAPI.post('services', data);
       promise.then(function() {
-        AdminToast(id ? 'Service modifie' : 'Service cree', 'success');
+        AdminToast(id ? I18n.t('svc_updated') : I18n.t('svc_created'), 'success');
         closeModal();
         loadServices();
       }).catch(function(err) {
-        AdminAlert('form-alert', err.error || 'Erreur lors de l\'enregistrement', 'danger');
+        AdminAlert('form-alert', err.error || I18n.t('svc_save_error'), 'danger');
       }).finally(function() { btn.disabled = false; });
     };
 
@@ -243,10 +245,10 @@
     window.confirmDelete = function() {
       if (!deleteId) return;
       AdminAPI.del('services/' + deleteId).then(function() {
-        AdminToast('Service supprime', 'success');
+        AdminToast(I18n.t('svc_deleted'), 'success');
         closeDeleteModal();
         loadServices();
-      }).catch(function() { AdminToast('Erreur de suppression', 'error'); });
+      }).catch(function() { AdminToast(I18n.t('svc_delete_error'), 'error'); });
     };
   </script>
 </body>

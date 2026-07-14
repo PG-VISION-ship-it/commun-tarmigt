@@ -10,6 +10,7 @@ const servicesRouter = require("./routes/services");
 const adminRouter = require("./routes/admin");
 const chatRouter = require("./routes/chat");
 
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -42,6 +43,8 @@ app.use("/api/actualites", actualitesRouter);
 app.use("/api/services", servicesRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/chat", chatRouter);
+
+
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", commune: "Tarmigt" });

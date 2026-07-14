@@ -1,6 +1,13 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   admin.js — Core admin utilities (auth, API, sidebar, topbar, toasts)
+   Now with full i18n support — all visible strings use I18n.t()
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 (function () {
   var TOKEN_KEY = 'admin_token';
   var USER_KEY = 'admin_user';
+
+  /* ── AUTH ──────────────────────────────────────────────────────────────── */
 
   window.AdminAuth = {
     getToken: function () { return localStorage.getItem(TOKEN_KEY); },
@@ -29,6 +36,8 @@
     }
   };
 
+  /* ── API ───────────────────────────────────────────────────────────────── */
+
   window.AdminAPI = {
     request: function (method, url, body) {
       var headers = { 'Content-Type': 'application/json' };
@@ -39,7 +48,7 @@
       return fetch('/api/admin/' + url, opts).then(function (res) {
         return res.json().then(function (data) {
           if (res.status === 401) { AdminAuth.logout(); return Promise.reject(data); }
-          if (res.status === 403) { AdminToast(data.error || 'Acces interdit', 'error'); return Promise.reject(data); }
+          if (res.status === 403) { AdminToast(data.error || I18n.t('access_forbidden'), 'error'); return Promise.reject(data); }
           if (!res.ok) return Promise.reject(data);
           return data;
         });
@@ -63,6 +72,8 @@
     }
   };
 
+  /* ── TOAST & ALERT ─────────────────────────────────────────────────────── */
+
   function toast(msg, type) {
     var c = document.getElementById('toast-container');
     if (!c) { c = document.createElement('div'); c.id = 'toast-container'; c.className = 'toast-container'; document.body.appendChild(c); }
@@ -83,6 +94,8 @@
   }
   window.AdminAlert = showAlert;
 
+  /* ── SVG ICONS ─────────────────────────────────────────────────────────── */
+
   var SVG_ICONS = {
     dashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
     news: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2"/><line x1="7" y1="8" x2="13" y2="8"/><line x1="7" y1="12" x2="11" y2="12"/></svg>',
@@ -94,6 +107,8 @@
     home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'
   };
 
+  /* ── SIDEBAR (translated) ──────────────────────────────────────────────── */
+
   function buildSidebar(activePage) {
     var user = AdminAuth.getUser();
     var initials = '?';
@@ -104,22 +119,24 @@
     }
     return '<div class="sidebar-header">' +
       '<img src="/tarmigt-logo.svg" alt="Logo">' +
-      '<div><h2>Commune Tarmigt</h2><p>Espace d\'administration</p></div>' +
+      '<div><h2>' + I18n.t('commune_name') + '</h2><p>' + I18n.t('commune_sub') + '</p></div>' +
       '</div>' +
       '<nav class="sidebar-nav">' +
-      '<div class="nav-label">Menu</div>' +
-      '<a href="index.html" class="' + (activePage === 'dashboard' ? 'active' : '') + '">' + SVG_ICONS.dashboard + ' Tableau de bord</a>' +
-      '<a href="actualites.html" class="' + (activePage === 'actualites' ? 'active' : '') + '">' + SVG_ICONS.news + ' Actualites</a>' +
-      '<a href="services.html" class="' + (activePage === 'services' ? 'active' : '') + '">' + SVG_ICONS.services + ' Services</a>' +
-      '<a href="messages.html" class="' + (activePage === 'messages' ? 'active' : '') + '">' + SVG_ICONS.messages + ' Messages <span class="badge" id="unread-badge" style="display:none"></span></a>' +
-      '<div class="nav-label">Compte</div>' +
-      '<a href="profile.html" class="' + (activePage === 'profile' ? 'active' : '') + '">' + SVG_ICONS.profile + ' Mon profil</a>' +
-      '<a href="settings.html" class="' + (activePage === 'settings' ? 'active' : '') + '">' + SVG_ICONS.settings + ' Parametres</a>' +
-      '<div class="nav-label">Administration</div>' +
-      '<a href="users.html" class="' + (activePage === 'users' ? 'active' : '') + '">' + SVG_ICONS.profile + ' Utilisateurs</a>' +
-      '<a href="#" onclick="AdminAuth.logout();return false;" style="margin-top:8px;border-top:1px solid rgba(255,255,255,.1);padding-top:16px">' + SVG_ICONS.logout + ' Deconnexion</a>' +
+      '<div class="nav-label">' + I18n.t('nav_menu') + '</div>' +
+      '<a href="index.html" class="' + (activePage === 'dashboard' ? 'active' : '') + '">' + SVG_ICONS.dashboard + ' ' + I18n.t('nav_dashboard') + '</a>' +
+      '<a href="actualites.html" class="' + (activePage === 'actualites' ? 'active' : '') + '">' + SVG_ICONS.news + ' ' + I18n.t('nav_news') + '</a>' +
+      '<a href="services.html" class="' + (activePage === 'services' ? 'active' : '') + '">' + SVG_ICONS.services + ' ' + I18n.t('nav_services') + '</a>' +
+      '<a href="messages.html" class="' + (activePage === 'messages' ? 'active' : '') + '">' + SVG_ICONS.messages + ' ' + I18n.t('nav_messages') + ' <span class="badge" id="unread-badge" style="display:none"></span></a>' +
+      '<div class="nav-label">' + I18n.t('nav_account') + '</div>' +
+      '<a href="profile.html" class="' + (activePage === 'profile' ? 'active' : '') + '">' + SVG_ICONS.profile + ' ' + I18n.t('nav_profile') + '</a>' +
+      '<a href="settings.html" class="' + (activePage === 'settings' ? 'active' : '') + '">' + SVG_ICONS.settings + ' ' + I18n.t('nav_settings') + '</a>' +
+      '<div class="nav-label">' + I18n.t('nav_administration') + '</div>' +
+      '<a href="users.html" class="' + (activePage === 'users' ? 'active' : '') + '">' + SVG_ICONS.profile + ' ' + I18n.t('nav_users') + '</a>' +
+      '<a href="#" onclick="AdminAuth.logout();return false;" style="margin-top:8px;border-top:1px solid rgba(255,255,255,.1);padding-top:16px">' + SVG_ICONS.logout + ' ' + I18n.t('nav_logout') + '</a>' +
       '</nav>';
   }
+
+  /* ── TOPBAR (translated) ───────────────────────────────────────────────── */
 
   function buildTopbar(title) {
     var user = AdminAuth.getUser();
@@ -134,11 +151,13 @@
       '<h1>' + title + '</h1>' +
       '</div>' +
       '<div class="topbar-right">' +
-      '<a href="/" class="btn btn-outline btn-sm" target="_blank">' + SVG_ICONS.home + ' Site</a>' +
+      '<a href="/" class="btn btn-outline btn-sm" target="_blank">' + SVG_ICONS.home + ' ' + I18n.t('site_short') + '</a>' +
       '<div class="user-info"><div class="user-avatar">' + initials + '</div><div><div class="user-name">' + (user ? user.full_name : '') + '</div><div class="user-role">' + (user ? user.role : '') + '</div></div></div>' +
-      '<button class="btn-logout" onclick="AdminAuth.logout()">Deconnexion</button>' +
+      '<button class="btn-logout" onclick="AdminAuth.logout()">' + I18n.t('nav_logout') + '</button>' +
       '</div>';
   }
+
+  /* ── SIDEBAR TOGGLE ────────────────────────────────────────────────────── */
 
   window.toggleSidebar = function () {
     var sb = document.getElementById('sidebar');
@@ -147,29 +166,39 @@
     if (ov) ov.classList.toggle('show');
   };
 
-  window.initAdminPage = function (activePage, title) {
+  /* ── PAGE INIT (loads language from server, then builds UI) ────────────── */
+
+  window.initAdminPage = function (activePage, titleKey) {
     if (!AdminAuth.checkAuth()) return false;
-    var sb = document.getElementById('sidebar');
-    var tb = document.getElementById('topbar');
-    if (sb) sb.innerHTML = buildSidebar(activePage);
-    if (tb) tb.innerHTML = buildTopbar(title);
 
-    var ov = document.getElementById('sidebar-overlay');
-    if (ov) ov.onclick = function () { toggleSidebar(); };
+    /* Load language preference from server, then build sidebar/topbar */
+    I18n.loadFromServer(function () {
+      var sb = document.getElementById('sidebar');
+      var tb = document.getElementById('topbar');
+      var title = I18n.t(titleKey) || titleKey;
+      if (sb) sb.innerHTML = buildSidebar(activePage);
+      if (tb) tb.innerHTML = buildTopbar(title);
 
-    AdminAPI.get('messages?unread=1').then(function (d) {
-      var badge = document.getElementById('unread-badge');
-      if (badge && d.total > 0) { badge.textContent = d.total; badge.style.display = 'inline'; }
-    }).catch(function () {});
+      var ov = document.getElementById('sidebar-overlay');
+      if (ov) ov.onclick = function () { toggleSidebar(); };
+
+      /* Re-translate any [data-i18n] elements on the page */
+      I18n.translatePage();
+
+      AdminAPI.get('messages?unread=1').then(function (d) {
+        var badge = document.getElementById('unread-badge');
+        if (badge && d.total > 0) { badge.textContent = d.total; badge.style.display = 'inline'; }
+      }).catch(function () {});
+    });
 
     return true;
   };
 
+  /* ── UTILITIES ─────────────────────────────────────────────────────────── */
+
   window.AdminUtils = {
     formatDate: function (d) {
-      if (!d) return '-';
-      var dt = new Date(d);
-      return dt.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+      return I18n.formatDate(d);
     },
     escapeHtml: function (str) {
       if (!str) return '';
