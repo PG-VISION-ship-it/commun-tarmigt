@@ -4,24 +4,21 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
 const pool = require('../config/db');
 const { authMiddleware, JWT_SECRET } = require('../middleware/auth');
 const rateLimit = require('express-rate-limit');
 
-const uploadsDir = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) { cb(null, uploadsDir); },
-  filename: function (req, file, cb) {
-    const unique = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, unique + path.extname(file.originalname));
+let cloudinary = null;
+if (process.env.CLOUDINARY_URL) {
+  try {
+    cloudinary = require('cloudinary').v2;
+  } catch {
+    console.warn('cloudinary package not installed. Install it with: npm install cloudinary');
   }
-});
+}
 
 const upload = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: function (req, file, cb) {
     const allowed = /jpeg|jpg|png|gif|webp/;
@@ -31,6 +28,22 @@ const upload = multer({
     else cb(new Error('Seules les images sont autorisees'));
   }
 });
+
+async function uploadToCloudinary(file) {
+  if (!cloudinary) {
+    throw new Error('Cloudinary non configure. Ajoutez CLOUDINARY_URL dans .env');
+  }
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: 'tarmigt', resource_type: 'image' },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result.secure_url);
+      }
+    );
+    stream.end(file.buffer);
+  });
+}
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -207,10 +220,6 @@ router.delete('/actualites/:id', authMiddleware, async (req, res) => {
   try {
     const [existing] = await pool.execute('SELECT * FROM actualites WHERE id = ? LIMIT 1', [req.params.id]);
     if (existing.length === 0) return res.status(404).json({ error: 'Actualite non trouvee' });
-    if (existing[0].image_url) {
-      const imgPath = path.join(uploadsDir, path.basename(existing[0].image_url));
-      if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
-    }
     await pool.execute('DELETE FROM actualites WHERE id = ?', [req.params.id]);
     res.json({ success: true, message: 'Actualite supprimee' });
   } catch (err) {
@@ -224,19 +233,14 @@ router.post('/actualites/:id/image', authMiddleware, upload.single('image'), asy
     if (!req.file) return res.status(400).json({ error: 'Aucun fichier fourni' });
     const [existing] = await pool.execute('SELECT image_url FROM actualites WHERE id = ? LIMIT 1', [req.params.id]);
     if (existing.length === 0) {
-      fs.unlinkSync(req.file.path);
       return res.status(404).json({ error: 'Actualite non trouvee' });
     }
-    if (existing[0].image_url) {
-      const oldPath = path.join(uploadsDir, path.basename(existing[0].image_url));
-      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-    }
-    const imageUrl = '/uploads/' + req.file.filename;
+    const imageUrl = await uploadToCloudinary(req.file);
     await pool.execute('UPDATE actualites SET image_url = ? WHERE id = ?', [imageUrl, req.params.id]);
     res.json({ image_url: imageUrl });
   } catch (err) {
     console.error('Upload image error:', err);
-    res.status(500).json({ error: 'Erreur serveur' });
+    res.status(500).json({ error: err.message || 'Erreur serveur' });
   }
 });
 
@@ -597,12 +601,14 @@ router.put('/settings', authMiddleware, async (req, res) => {
 
 // ── IMAGE UPLOAD UTILITY ──────────────────────────────────────────────────────
 
-router.post('/upload', authMiddleware, upload.single('image'), (req, res) => {
+router.post('/upload', authMiddleware, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'Aucun fichier fourni' });
-    res.json({ url: '/uploads/' + req.file.filename });
+    const url = await uploadToCloudinary(req.file);
+    res.json({ url });
   } catch (err) {
-    res.status(500).json({ error: 'Erreur serveur' });
+    console.error('Upload error:', err);
+    res.status(500).json({ error: err.message || 'Erreur serveur' });
   }
 });
 

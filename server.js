@@ -13,11 +13,6 @@ const chatRouter = require("./routes/chat");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const uploadsDir = path.join(__dirname, "uploads");
-const dataDir = path.join(__dirname, "data");
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-
 function sanitize(str) {
   if (typeof str !== "string") return "";
   return str.replace(/<[^>]*>/g, "").trim();
@@ -34,7 +29,6 @@ app.use((req, res, next) => {
 });
 app.use(express.json({ limit: "10kb" }));
 app.use(express.static(path.join(__dirname, "public")));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const contactLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -100,13 +94,17 @@ app.post("/api/contact", contactLimiter, async (req, res) => {
   }
 
   if (!dbSuccess) {
-    const filePath = path.join(__dirname, "data", "contacts.json");
-    let entries = [];
-    try { entries = JSON.parse(fs.readFileSync(filePath, "utf-8")); } catch { /* empty */ }
-    entry.id = Date.now();
-    entry.date = new Date().toISOString();
-    entries.push(entry);
-    fs.writeFileSync(filePath, JSON.stringify(entries, null, 2), "utf-8");
+    try {
+      const filePath = path.join(__dirname, "data", "contacts.json");
+      let entries = [];
+      try { entries = JSON.parse(fs.readFileSync(filePath, "utf-8")); } catch { /* empty */ }
+      entry.id = Date.now();
+      entry.date = new Date().toISOString();
+      entries.push(entry);
+      fs.writeFileSync(filePath, JSON.stringify(entries, null, 2), "utf-8");
+    } catch {
+      console.warn("JSON fallback write failed (expected on Vercel serverless).");
+    }
   }
   res.status(201).json({ success: true });
 });
@@ -120,6 +118,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Erreur interne du serveur." });
 });
 
-app.listen(PORT, () => {
-  console.log(`Serveur de la Commune de Tarmigt lance sur http://localhost:${PORT}`);
-});
+if (process.env.VERCEL !== "1") {
+  app.listen(PORT, () => {
+    console.log(`Serveur de la Commune de Tarmigt lance sur http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
