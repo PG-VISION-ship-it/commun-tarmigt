@@ -52,6 +52,13 @@ a:hover{color:var(--terracotta);text-decoration:none}
 .login-box .btn-login:disabled{opacity:.6;cursor:not-allowed}
 .login-error{background:rgba(193,80,46,.08);color:var(--terracotta);padding:10px 14px;border-radius:var(--radius);margin-bottom:16px;font-size:.9rem;display:none;border:1px solid rgba(193,80,46,.2)}
 
+/* password toggle */
+.pw-wrapper{position:relative}
+.pw-wrapper input{padding-right:44px}
+.pw-toggle{position:absolute;right:2px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:8px;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;transition:color .2s}
+.pw-toggle:hover{color:var(--green)}
+.pw-toggle svg{width:20px;height:20px}
+
 /* ── LAYOUT ─────────────────────────────────────────────────── */
 .admin-wrapper{display:flex;min-height:100vh}
 .sidebar{width:var(--sidebar-w);background:var(--green-deep);color:var(--sand);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:1000;transition:transform .3s ease}

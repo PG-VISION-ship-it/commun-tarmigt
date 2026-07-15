@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
 const pool = require('../config/db');
-const { authMiddleware, JWT_SECRET } = require('../middleware/auth');
+const { authMiddleware, JWT_SECRET, blacklistToken } = require('../middleware/auth');
 const rateLimit = require('express-rate-limit');
 
 let cloudinary = null;
@@ -53,6 +53,14 @@ const loginLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const adminCrudLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { error: 'Trop de requetes. Veuillez reessayer plus tard.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 function sanitize(str) {
   if (typeof str !== 'string') return '';
   return str.replace(/<[^>]*>/g, '').trim();
@@ -87,6 +95,17 @@ router.post('/login', loginLimiter, async (req, res) => {
     });
   } catch (err) {
     console.error('Login error:', err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+router.post('/logout', authMiddleware, async (req, res) => {
+  try {
+    if (req.token) {
+      blacklistToken(req.token);
+    }
+    res.json({ success: true, message: 'Deconnexion reussie' });
+  } catch (err) {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
@@ -206,7 +225,7 @@ router.get('/actualites/:id', authMiddleware, async (req, res) => {
   }
 });
 
-router.post('/actualites', authMiddleware, async (req, res) => {
+router.post('/actualites', authMiddleware, adminCrudLimiter, async (req, res) => {
   try {
     const { titre_fr, titre_ar, contenu_fr, contenu_ar, image_url, date_publication, est_publie } = req.body;
     if (!titre_fr || !titre_ar || !contenu_fr || !contenu_ar || !date_publication) {
@@ -226,7 +245,7 @@ router.post('/actualites', authMiddleware, async (req, res) => {
   }
 });
 
-router.put('/actualites/:id', authMiddleware, async (req, res) => {
+router.put('/actualites/:id', authMiddleware, adminCrudLimiter, async (req, res) => {
   try {
     const { titre_fr, titre_ar, contenu_fr, contenu_ar, image_url, date_publication, est_publie } = req.body;
     const [existing] = await pool.execute('SELECT * FROM actualites WHERE id = ? LIMIT 1', [req.params.id]);
@@ -250,7 +269,7 @@ router.put('/actualites/:id', authMiddleware, async (req, res) => {
   }
 });
 
-router.delete('/actualites/:id', authMiddleware, async (req, res) => {
+router.delete('/actualites/:id', authMiddleware, adminCrudLimiter, async (req, res) => {
   try {
     const [existing] = await pool.execute('SELECT * FROM actualites WHERE id = ? LIMIT 1', [req.params.id]);
     if (existing.length === 0) return res.status(404).json({ error: 'Actualite non trouvee' });
@@ -262,7 +281,7 @@ router.delete('/actualites/:id', authMiddleware, async (req, res) => {
   }
 });
 
-router.post('/actualites/:id/image', authMiddleware, upload.single('image'), async (req, res) => {
+router.post('/actualites/:id/image', authMiddleware, adminCrudLimiter, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'Aucun fichier fourni' });
     const [existing] = await pool.execute('SELECT image_url FROM actualites WHERE id = ? LIMIT 1', [req.params.id]);
@@ -329,7 +348,7 @@ router.get('/services/:id', authMiddleware, async (req, res) => {
   }
 });
 
-router.post('/services', authMiddleware, async (req, res) => {
+router.post('/services', authMiddleware, adminCrudLimiter, async (req, res) => {
   try {
     const { nom_fr, nom_ar, description_fr, description_ar, documents_requis_fr, documents_requis_ar, delai, cout, categorie, ordre_affichage } = req.body;
     if (!nom_fr || !nom_ar || !description_fr || !description_ar) {
@@ -351,7 +370,7 @@ router.post('/services', authMiddleware, async (req, res) => {
   }
 });
 
-router.put('/services/:id', authMiddleware, async (req, res) => {
+router.put('/services/:id', authMiddleware, adminCrudLimiter, async (req, res) => {
   try {
     const [existing] = await pool.execute('SELECT * FROM services WHERE id = ? LIMIT 1', [req.params.id]);
     if (existing.length === 0) return res.status(404).json({ error: 'Service non trouve' });
@@ -378,7 +397,7 @@ router.put('/services/:id', authMiddleware, async (req, res) => {
   }
 });
 
-router.delete('/services/:id', authMiddleware, async (req, res) => {
+router.delete('/services/:id', authMiddleware, adminCrudLimiter, async (req, res) => {
   try {
     const [existing] = await pool.execute('SELECT * FROM services WHERE id = ? LIMIT 1', [req.params.id]);
     if (existing.length === 0) return res.status(404).json({ error: 'Service non trouve' });
@@ -392,7 +411,7 @@ router.delete('/services/:id', authMiddleware, async (req, res) => {
 
 // ── MESSAGES CRUD ─────────────────────────────────────────────────────────────
 
-router.delete('/messages/batch/delete-read', authMiddleware, async (req, res) => {
+router.delete('/messages/batch/delete-read', authMiddleware, adminCrudLimiter, async (req, res) => {
   try {
     const [result] = await pool.execute('DELETE FROM contacts WHERE is_read = 1');
     res.json({ success: true, deleted: result.affectedRows });
@@ -437,7 +456,7 @@ router.get('/messages/:id', authMiddleware, async (req, res) => {
   }
 });
 
-router.put('/messages/:id/read', authMiddleware, async (req, res) => {
+router.put('/messages/:id/read', authMiddleware, adminCrudLimiter, async (req, res) => {
   try {
     const [existing] = await pool.execute('SELECT * FROM contacts WHERE id = ? LIMIT 1', [req.params.id]);
     if (existing.length === 0) return res.status(404).json({ error: 'Message non trouve' });
@@ -448,7 +467,7 @@ router.put('/messages/:id/read', authMiddleware, async (req, res) => {
   }
 });
 
-router.delete('/messages/:id', authMiddleware, async (req, res) => {
+router.delete('/messages/:id', authMiddleware, adminCrudLimiter, async (req, res) => {
   try {
     const [existing] = await pool.execute('SELECT * FROM contacts WHERE id = ? LIMIT 1', [req.params.id]);
     if (existing.length === 0) return res.status(404).json({ error: 'Message non trouve' });
@@ -483,7 +502,7 @@ router.put('/profile/password', authMiddleware, async (req, res) => {
   try {
     const { current_password, new_password } = req.body;
     if (!current_password || !new_password) return res.status(400).json({ error: 'Mot de passe actuel et nouveau mot de passe requis' });
-    if (new_password.length < 6) return res.status(400).json({ error: 'Le nouveau mot de passe doit contenir au moins 6 caracteres' });
+    if (new_password.length < 8) return res.status(400).json({ error: 'Le nouveau mot de passe doit contenir au moins 8 caracteres' });
     const [rows] = await pool.execute('SELECT password_hash FROM users WHERE id = ?', [req.user.id]);
     if (rows.length === 0) return res.status(404).json({ error: 'Utilisateur non trouve' });
     const valid = await bcrypt.compare(current_password, rows[0].password_hash);
@@ -505,7 +524,7 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-router.get('/users', authMiddleware, async (req, res) => {
+router.get('/users', authMiddleware, requireAdmin, async (req, res) => {
   try {
     const [rows] = await pool.execute('SELECT id, username, email, full_name, role, created_at FROM users ORDER BY created_at DESC');
     res.json(rows);
@@ -514,14 +533,14 @@ router.get('/users', authMiddleware, async (req, res) => {
   }
 });
 
-router.post('/users', authMiddleware, requireAdmin, async (req, res) => {
+router.post('/users', authMiddleware, requireAdmin, adminCrudLimiter, async (req, res) => {
   try {
     const { username, email, password, full_name, role } = req.body;
     if (!username || !email || !password || !full_name) {
       return res.status(400).json({ error: 'Champs obligatoires manquants' });
     }
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 6 caracteres' });
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caracteres' });
     }
     const [dupUser] = await pool.execute('SELECT id FROM users WHERE username = ?', [sanitize(username)]);
     if (dupUser.length > 0) return res.status(400).json({ error: 'Ce nom d\'utilisateur est deja utilise' });
@@ -542,7 +561,7 @@ router.post('/users', authMiddleware, requireAdmin, async (req, res) => {
   }
 });
 
-router.put('/users/:id', authMiddleware, requireAdmin, async (req, res) => {
+router.put('/users/:id', authMiddleware, requireAdmin, adminCrudLimiter, async (req, res) => {
   try {
     const { username, email, full_name, role, password } = req.body;
     const [existing] = await pool.execute('SELECT * FROM users WHERE id = ? LIMIT 1', [req.params.id]);
@@ -559,7 +578,7 @@ router.put('/users/:id', authMiddleware, requireAdmin, async (req, res) => {
 
     const validRole = ['admin', 'editor'].includes(role) ? role : existing[0].role;
     if (password) {
-      if (password.length < 6) return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 6 caracteres' });
+      if (password.length < 8) return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caracteres' });
       const hash = await bcrypt.hash(password, 10);
       await pool.execute(
         'UPDATE users SET username = ?, email = ?, full_name = ?, role = ?, password_hash = ? WHERE id = ?',
@@ -581,7 +600,7 @@ router.put('/users/:id', authMiddleware, requireAdmin, async (req, res) => {
   }
 });
 
-router.delete('/users/:id', authMiddleware, requireAdmin, async (req, res) => {
+router.delete('/users/:id', authMiddleware, requireAdmin, adminCrudLimiter, async (req, res) => {
   try {
     const [existing] = await pool.execute('SELECT * FROM users WHERE id = ? LIMIT 1', [req.params.id]);
     if (existing.length === 0) return res.status(404).json({ error: 'Utilisateur non trouve' });
@@ -640,7 +659,7 @@ router.get('/settings', authMiddleware, async (req, res) => {
   }
 });
 
-router.put('/settings', authMiddleware, async (req, res) => {
+router.put('/settings', authMiddleware, requireAdmin, adminCrudLimiter, async (req, res) => {
   try {
     const allowedKeys = ['site_name', 'site_description', 'site_email', 'site_phone', 'site_address'];
     for (const key of allowedKeys) {
@@ -666,7 +685,7 @@ router.put('/settings', authMiddleware, async (req, res) => {
 
 // ── IMAGE UPLOAD UTILITY ──────────────────────────────────────────────────────
 
-router.post('/upload', authMiddleware, upload.single('image'), async (req, res) => {
+router.post('/upload', authMiddleware, adminCrudLimiter, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'Aucun fichier fourni' });
     const url = await uploadToCloudinary(req.file);

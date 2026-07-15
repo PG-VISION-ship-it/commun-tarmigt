@@ -28,7 +28,13 @@
         </div>
         <div class="form-group">
           <label for="password" data-i18n="login_password_label">Mot de passe</label>
-          <input type="password" id="password" name="password" data-i18n-ph="login_password_ph" placeholder="Entrez votre mot de passe" required autocomplete="current-password">
+          <div class="pw-wrapper">
+            <input type="password" id="password" name="password" data-i18n-ph="login_password_ph" placeholder="Entrez votre mot de passe" required autocomplete="current-password">
+            <button type="button" class="pw-toggle" id="pw-toggle" aria-label="Afficher le mot de passe">
+              <svg class="pw-eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="pw-eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
         </div>
         <button type="submit" class="btn-login" id="btn-login" data-i18n="login_btn">Se connecter</button>
       </form>
@@ -45,6 +51,18 @@
       var form = document.getElementById('login-form');
       var errorDiv = document.getElementById('login-error');
       var btn = document.getElementById('btn-login');
+      var pwInput = document.getElementById('password');
+      var pwToggle = document.getElementById('pw-toggle');
+      var eyeOpen = pwToggle.querySelector('.pw-eye-open');
+      var eyeClosed = pwToggle.querySelector('.pw-eye-closed');
+
+      pwToggle.addEventListener('click', function() {
+        var isPassword = pwInput.type === 'password';
+        pwInput.type = isPassword ? 'text' : 'password';
+        eyeOpen.style.display = isPassword ? 'none' : '';
+        eyeClosed.style.display = isPassword ? '' : 'none';
+        pwInput.focus();
+      });
 
       form.addEventListener('submit', function(e) {
         e.preventDefault();

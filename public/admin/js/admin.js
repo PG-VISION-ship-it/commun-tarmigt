@@ -31,6 +31,13 @@
       return true;
     },
     logout: function () {
+      var token = this.getToken();
+      if (token) {
+        fetch('/api/admin/logout', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token }
+        }).catch(function () {});
+      }
       this.clearAuth();
       window.location.href = 'login.html';
     }
