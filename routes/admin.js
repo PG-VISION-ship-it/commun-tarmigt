@@ -163,6 +163,15 @@ router.get('/stats', authMiddleware, async (req, res) => {
        ORDER BY month ASC`
     );
 
+    const [servicesByMonth] = await pool.execute(
+      `SELECT DATE_FORMAT(created_at, '%Y-%m') AS month,
+              COUNT(*) AS count
+       FROM services
+       WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+       GROUP BY month
+       ORDER BY month ASC`
+    );
+
     const [[readCount]] = await pool.execute('SELECT COUNT(*) AS count FROM contacts WHERE is_read = 1');
 
     res.json({
@@ -174,6 +183,7 @@ router.get('/stats', authMiddleware, async (req, res) => {
       categories,
       charts: {
         newsByMonth,
+        servicesByMonth,
         servicesByCategory,
         messagesByMonth
       }

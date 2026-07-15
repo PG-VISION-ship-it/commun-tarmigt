@@ -154,19 +154,20 @@ ${contextData}`;
 router.post("/", chatLimiter, async (req, res) => {
   try {
     const apiKey = process.env.OPENAI_API_KEY;
+    const { messages, lang } = req.body;
+    const userLang = lang === "ar" ? "ar" : "fr";
+
     if (!apiKey) {
       return res.status(503).json({
-        error:
-          "Le service de chat n'est pas configure. Veuillez ajouter votre cle API OpenAI dans le fichier .env.",
+        error: userLang === "ar"
+          ? "خدمة الدردشة غير متوفرة في الوقت الحالي."
+          : "Le service de chat n'est pas disponible pour le moment.",
       });
     }
 
-    const { messages, lang } = req.body;
     if (!Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({ error: "Messages invalides." });
     }
-
-    const userLang = lang === "ar" ? "ar" : "fr";
 
     const [actualites, services, settings] = await Promise.all([
       fetchActualites(userLang),

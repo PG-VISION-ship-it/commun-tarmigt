@@ -13,7 +13,7 @@
       placeholder: "Ecrivez votre message…",
       send: "Envoyer",
       error_api:
-        "Le service de chat n'est pas configure. Ajoutez votre cle API OpenAI dans le fichier .env.",
+        "Le service de chat n'est pas disponible pour le moment. Veuillez réessayer plus tard.",
       error_network: "Erreur de connexion. Verifiez votre reseau.",
       error_generic: "Desole, une erreur est survenue. Reessayez.",
       typing_label: "ecrit…",
@@ -34,7 +34,7 @@
       placeholder: "اكتب رسالتك هنا…",
       send: "إرسال",
       error_api:
-        "خدمة الدردشة غير مهيأة. أضف مفتاح OpenAI API في ملف .env.",
+        "خدمة الدردشة غير متوفرة في الوقت الحالي. يرجى المحاولة مرة أخرى لاحقاً.",
       error_network: "خطأ في الاتصال. تحقق من شبكتك.",
       error_generic: "عذراً، حدث خطأ. حاول مرة أخرى.",
       typing_label: "يكتب…",

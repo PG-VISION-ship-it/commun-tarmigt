@@ -62,12 +62,12 @@
                 </div>
                 <div class="form-group">
                   <label data-i18n="prof_label_new_pw">Nouveau mot de passe</label>
-                  <input type="password" id="new_password" required minlength="6">
+                  <input type="password" id="new_password" required minlength="8">
                   <div class="hint" data-i18n="prof_hint_min">Minimum 6 caracteres</div>
                 </div>
                 <div class="form-group">
                   <label data-i18n="prof_label_confirm_pw">Confirmer le mot de passe</label>
-                  <input type="password" id="confirm_password" required minlength="6">
+                  <input type="password" id="confirm_password" required minlength="8">
                 </div>
                 <div class="form-actions">
                   <button type="submit" class="btn btn-primary" data-i18n="prof_btn_change_pw">Changer le mot de passe</button>
@@ -118,7 +118,7 @@
       var np = document.getElementById('new_password').value;
       var cnp = document.getElementById('confirm_password').value;
       if (np !== cnp) { AdminAlert('password-alert', I18n.t('pw_mismatch'), 'danger'); return; }
-      if (np.length < 6) { AdminAlert('password-alert', I18n.t('pw_too_short'), 'danger'); return; }
+      if (np.length < 8) { AdminAlert('password-alert', I18n.t('pw_too_short'), 'danger'); return; }
       AdminAPI.put('profile/password', { current_password: cp, new_password: np }).then(function() {
         AdminToast(I18n.t('pw_changed'), 'success');
         AdminAlert('password-alert', I18n.t('pw_changed_ok'), 'success');

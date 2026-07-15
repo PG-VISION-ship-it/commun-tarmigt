@@ -38,16 +38,16 @@
             <div class="chart-body"><canvas id="chart-news-month"></canvas></div>
           </div>
           <div class="card">
+            <div class="card-header"><h3 data-i18n="dash_services_by_month">Services crees par mois</h3></div>
+            <div class="chart-body"><canvas id="chart-services-month"></canvas></div>
+          </div>
+          <div class="card">
             <div class="card-header"><h3 data-i18n="dash_msg_by_month">Messages par mois</h3></div>
             <div class="chart-body"><canvas id="chart-messages-month"></canvas></div>
           </div>
           <div class="card">
             <div class="card-header"><h3 data-i18n="dash_services_by_cat">Services par categorie</h3></div>
             <div class="chart-body"><canvas id="chart-services-cat"></canvas></div>
-          </div>
-          <div class="card">
-            <div class="card-header"><h3 data-i18n="dash_msg_read_status">Messages lus / non lus</h3></div>
-            <div class="chart-body"><canvas id="chart-read-status"></canvas></div>
           </div>
         </div>
 
@@ -159,6 +159,18 @@
           });
         } else { showEmpty('chart-news-month', I18n.t('dash_no_news_now')); }
 
+        if (c.servicesByMonth && c.servicesByMonth.length > 0) {
+          var labelsSvc = c.servicesByMonth.map(function(r) {
+            var p = r.month.split('-');
+            return I18n.monthLabel(parseInt(p[1])) + ' ' + p[0].slice(2);
+          });
+          charts.servicesMonth = new Chart(document.getElementById('chart-services-month'), {
+            type: 'bar',
+            data: { labels: labelsSvc, datasets: [{ label: I18n.t('dash_chart_services'), data: c.servicesByMonth.map(function(r){return r.count}), backgroundColor: GOLD, borderRadius: 4, maxBarThickness: 40 }] },
+            options: chartDefaults
+          });
+        } else { showEmpty('chart-services-month', I18n.t('dash_no_service_cat')); }
+
         if (c.messagesByMonth && c.messagesByMonth.length > 0) {
           var labels2 = c.messagesByMonth.map(function(r) {
             var p = r.month.split('-');
@@ -178,16 +190,6 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { family: '"Work Sans",sans-serif', size: 13 }, padding: 12, usePointStyle: true, pointStyle: 'circle' } } } }
           });
         } else { showEmpty('chart-services-cat', I18n.t('dash_no_service_cat')); }
-
-        var readVal = (d.contacts && d.contacts.read) || 0;
-        var unreadVal = (d.contacts && d.contacts.unread) || 0;
-        if (readVal + unreadVal > 0) {
-          charts.readStatus = new Chart(document.getElementById('chart-read-status'), {
-            type: 'pie',
-            data: { labels: [I18n.t('dash_read'), I18n.t('dash_unread')], datasets: [{ data: [readVal, unreadVal], backgroundColor: [GREEN, TERRACOTTA], borderWidth: 2, borderColor: '#fff' }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { family: '"Work Sans",sans-serif', size: 13 }, padding: 12, usePointStyle: true, pointStyle: 'circle' } } } }
-          });
-        } else { showEmpty('chart-read-status', I18n.t('dash_no_message')); }
       }
     })();
   </script>

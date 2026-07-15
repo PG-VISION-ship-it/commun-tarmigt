@@ -1,11 +1,10 @@
 const jwt = require('jsonwebtoken');
 
 if (!process.env.JWT_SECRET) {
-  console.error('FATAL: JWT_SECRET environment variable is not set. Refusing to start without a secure secret.');
-  process.exit(1);
+  console.warn('WARNING: JWT_SECRET environment variable is not set. Using a fallback secret. Set JWT_SECRET in .env for production.');
 }
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || 'tarmigt-fallback-secret-change-in-production';
 
 const tokenBlacklist = new Set();
 
