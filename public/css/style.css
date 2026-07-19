@@ -297,7 +297,7 @@ section{ padding: 64px 0; }
   box-shadow: 0 10px 24px rgba(29,75,67,.12);
 }
 .card-media{
-  height:150px;
+  height:200px;
   background: linear-gradient(135deg, var(--green), var(--green-deep));
   display:flex; align-items:center; justify-content:center;
   color: var(--gold);
@@ -305,6 +305,7 @@ section{ padding: 64px 0; }
   font-size:14px;
   letter-spacing:.08em;
   text-transform:uppercase;
+  overflow:hidden;
 }
 .card-body{
   padding: 18px 20px 22px;

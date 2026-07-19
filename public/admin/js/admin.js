@@ -126,7 +126,7 @@
       if (parts.length > 1) initials += parts[parts.length - 1].charAt(0).toUpperCase();
     }
     return '<div class="sidebar-header">' +
-      '<img src="/tarmigt-logo.svg" alt="Logo">' +
+      '<img src="/images.jpg" alt="Logo">' +
       '<div><h2>' + I18n.t('commune_name') + '</h2><p>' + I18n.t('commune_sub') + '</p></div>' +
       '</div>' +
       '<nav class="sidebar-nav">' +

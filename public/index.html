@@ -167,9 +167,7 @@ function renderNewsCard(item){
   const lang = getLang();
   const titre = lang === "ar" ? item.titre_ar : item.titre_fr;
   const contenu = lang === "ar" ? item.contenu_ar : item.contenu_fr;
-  const mediaHtml = item.image_url
-    ? '<img src="' + escapeHtml(item.image_url) + '" alt="' + escapeHtml(titre) + '" style="width:100%;height:100%;object-fit:cover">'
-    : 'Tarmigt';
+  const mediaHtml = '<img src="images.jpg" alt="' + escapeHtml(titre) + '" style="width:100%;height:200px;object-fit:cover">';
   return `
     <div class="card">
       <div class="card-media">${mediaHtml}</div>
